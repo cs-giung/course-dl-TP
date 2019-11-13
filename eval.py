@@ -132,7 +132,7 @@ def main():
             elif config['attack'] == 'pgd':
                 attack_PGD_Linf = PGD_Linf(model=net)
                 acc1 = test_accuracy(test_loader, net, config, attack=attack_PGD_Linf)
-            acc1_list.append(acc1)
+            acc1_list.append(acc1.cpu().numpy()[0])
         print(acc1_list)
 
 
