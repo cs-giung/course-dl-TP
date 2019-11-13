@@ -113,6 +113,7 @@ def main():
 
     else:
         weights = sorted(os.listdir(config['weight']))
+        acc1_list = []
         for weight in weights:
             if '.pth' not in weight:
                 continue
@@ -124,13 +125,15 @@ def main():
 
             # test
             if config['attack'] == None:
-                _ = test_accuracy(test_loader, net, config, attack=None)
+                acc1 = test_accuracy(test_loader, net, config, attack=None)
             elif config['attack'] == 'fgsm':
                 attack_FGSM = FGSM(model=net)
-                _ = test_accuracy(test_loader, net, config, attack=attack_FGSM)
+                acc1 = test_accuracy(test_loader, net, config, attack=attack_FGSM)
             elif config['attack'] == 'pgd':
                 attack_PGD_Linf = PGD_Linf(model=net)
-                _ = test_accuracy(test_loader, net, config, attack=attack_PGD_Linf)
+                acc1 = test_accuracy(test_loader, net, config, attack=attack_PGD_Linf)
+            acc1_list.append(acc1)
+        print(acc1_list)
 
 
 if __name__ == '__main__':
