@@ -12,7 +12,7 @@ import torchvision.datasets as datasets
 import torchvision.transforms as transforms
 
 from src import VGG
-from src import PGD_Linf
+from src import PGD_Linf, PGD_L2
 from train_func import AverageMeter, ProgressMeter, accuracy, write_log
 
 
@@ -161,7 +161,7 @@ def main():
     parser.add_argument('--batch_size', default=32, type=int)
     parser.add_argument('--lr', default=0.01, type=float)
     parser.add_argument('--lr_decay', default=10, type=int)
-    parser.add_argument('--pgd_train', default=0, type=int)
+    parser.add_argument('--pgd_train', default=None, type=str)
     args = parser.parse_args()
 
     config = dict()
@@ -196,7 +196,10 @@ def main():
             optimizer = optim.SGD(net.parameters(), lr=learning_rate, momentum=0.9, weight_decay=5e-4)
 
         # train & valid
-        if config['pgd_train']:
+        if config['pgd_train'] == 'l2':
+            PGD = PGD_L2(model=net)
+            _ = train(train_loader, net, criterion, log_file, optimizer, epoch_idx, PGD=PGD, config=config)
+        elif config['pgd_train'] == 'linf':
             PGD = PGD_Linf(model=net)
             _ = train(train_loader, net, criterion, log_file, optimizer, epoch_idx, PGD=PGD, config=config)
         else:
