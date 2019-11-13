@@ -90,9 +90,8 @@ def train(train_loader, net, criterion, log_file,
         images = images.to(device=config['device'])
         labels = labels.to(device=config['device'])
 
-        pred_labels = net(images).max(1, keepdim=True)[1].squeeze_()
-
         if PGD is not None:
+            pred_labels = net(images).max(1, keepdim=True)[1].squeeze_()
             images = PGD.perturb(images, pred_labels)
 
         outputs = net(images)
@@ -176,16 +175,8 @@ def main():
     # CIFAR-10 dataset (40000 + 10000)
     train_loader, valid_loader = get_train_valid_loader(batch_size=config['batch_size'])
 
-    # pre-trained network
+    # classification network
     net = VGG('VGG16').to(device=config['device'])
-    state_dict = torch.load('./weights/vgg16_e086_90.62.pth', map_location=config['device'])
-    net.load_state_dict(state_dict)
-    for param in net.parameters():
-        param.requires_grad = False
-    net.classifier.weight.requires_grad = True
-    net.classifier.bias.requires_grad = True
-    torch.nn.init.xavier_uniform_(net.classifier.weight)
-    net.classifier.bias.data.fill_(0.1)
 
     # train settings
     learning_rate = config['learning_rate']
