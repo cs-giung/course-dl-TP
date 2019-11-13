@@ -10,7 +10,6 @@ python train.py --device cuda
                 --batch_size 32
                 --lr 0.01
                 --lr_decay 10
-                --pgd_train 0
 
 * data augmentation: RandomHorizontalFlip, RandomCrop
 ```
@@ -34,7 +33,7 @@ python eval.py --device cuda
 
 ### PGD-Trained Classifier
 
-#### PGD-Training #1
+#### PGD-Training #1 (L_inf, true label)
 
 <p align="center">
     <img width=50% src="./md/plot1.png">
@@ -46,7 +45,7 @@ python train.py --device cuda
                 --batch_size 32
                 --lr 0.01
                 --lr_decay 20
-                --pgd_train 1
+                --pgd_train linf
 
 * data augmentation: RandomHorizontalFlip
 ```
@@ -56,7 +55,7 @@ python train.py --device cuda
 | e022  | 74.39 %       | 46.18 %            | 47.76 %           |
 | e040  | 77.62 %       | 43.55 %            | 43.91 %           |
 
-#### PGD-Training #2
+#### PGD-Training #2 (L_inf, predicted label)
 
 <p align="center">
     <img width=50% src="./md/plot2.png">
@@ -67,12 +66,28 @@ python train.py --device cuda
 | e021  | 78.49 %       | 43.77 %            | 46.47 %           |
 | e035  | 79.03 %       | 43.43 %            | 44.95 %           |
 
+#### PGD-Training #3 (L_2, true label)
+
+```
+python train.py --device cuda
+                --epochs 300
+                --batch_size 32
+                --lr 0.01
+                --lr_decay 20
+                --pgd_train l2
+
+* data augmentation: RandomHorizontalFlip
+```
+
+#### PGD-Training #3 (L_2, predicted label)
+
 ## Appendix
 
 ### Demo 01. PGD Attack
 
 ```
-python demo_pgd.py
+python demo_pgd.py --device cpu
+                   --pgd_type [linf, l2]
 ```
 
 <p align="center">

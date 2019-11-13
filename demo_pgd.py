@@ -1,8 +1,10 @@
 """
-python demo_pgd.py
+python demo_pgd.py --pgd_type linf
+python demo_pgd.py --pgd_type l2
 
 """
 
+import argparse
 import numpy as np
 import matplotlib.pyplot as plt
 from PIL import Image
@@ -13,7 +15,7 @@ import torchvision.datasets as datasets
 import torchvision.transforms as transforms
 
 from src import VGG
-from src import PGD_Linf
+from src import PGD_Linf, PGD_L2
 
 
 ind2class = ('plane', 'car', 'bird', 'cat', 'deer',
@@ -65,8 +67,13 @@ def plot_comparison(img1, img2, soft1, soft2):
 
 def main():
 
+    parser = argparse.ArgumentParser()
+    parser.add_argument('--device', default='cuda', type=str)
+    parser.add_argument('--pgd_type', default=None, type=str)
+    args = parser.parse_args()
+
     # settings
-    device = 'cpu'
+    device = args.device
     weight_path = './weights/vgg16_e086_90.62.pth'
 
     # classification model
@@ -79,7 +86,10 @@ def main():
     test_dataloader = get_test_dataloader()
 
     # PGD instance
-    PGD = PGD_Linf(model=net)
+    if args.pgd_type == 'linf':
+        PGD = PGD_Linf(model=net)
+    elif args.pgd_type == 'l2':
+        PGD = PGD_L2(model=net)
 
     # PGD examples
     for images, labels in test_dataloader:
