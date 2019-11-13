@@ -56,6 +56,16 @@ python train.py --device cuda
 | e022  | 74.39 %       | 46.18 %            | 47.76 %           |
 | e040  | 77.62 %       | 43.55 %            | 43.91 %           |
 
+#### PGD-Training #2
+
+<p align="center">
+    <img width=50% src="./md/plot2.png">
+</p>
+
+| epoch | Original Acc. | FGSM-Attacked Acc. | PGD-Attacked Acc. |
+| :-:   |  -:           |  -:                |  -:               |
+| e021  | 78.49 %       | 43.77 %            | 46.47 %           |
+| e035  | 79.03 %       | 43.43 %            | 44.95 %           |
 
 ## Appendix
 
