@@ -37,7 +37,7 @@ python eval.py --device cuda
 #### PGD-Training #1
 
 <p align="center">
-    <img width=50% src="./md/train_pgd_1.png">
+    <img width=50% src="./md/plot1.png">
 </p>
 
 ```
@@ -66,5 +66,5 @@ python demo_pgd.py
 ```
 
 <p align="center">
-    <img width=50% src="./md/demo01.png">
+    <img width=50% src="./md/demo1.png">
 </p>
