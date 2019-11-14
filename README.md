@@ -64,7 +64,6 @@ python train.py --device cuda
 | epoch | Original Acc. | FGSM-Attacked Acc. | Linf-PGD-Attacked Acc. | L2-PGD Attacked Acc. |
 | :-:   |  -:           |  -:                |  -:                    | -:                   |
 | e021  | 78.49 %       | 43.77 %            | 46.47 %                | 40.61 %              |
-| e035  | 79.03 %       | 43.43 %            | 44.95 %                | 38.74 %              |
 
 #### PGD-Training #3 (L2, true label)
 
@@ -90,10 +89,13 @@ python train.py --device cuda
 
 #### PGD-Training #4 (L2, predicted label)
 
+<p align="center">
+    <img width=50% src="./md/plot4.png">
+</p>
+
 | epoch | Original Acc. | FGSM-Attacked Acc. | Linf-PGD-Attacked Acc. | L2-PGD Attacked Acc. |
 | :-:   |  -:           |  -:                |  -:                    | -:                   |
-|       |               |                    |                        |                      |
-|       |               |                    |                        |                      |
+| e021  | 76.72 %       | 45.60 %            | 48.59 %                | 43.47 %              |
 
 ## Appendix
 
