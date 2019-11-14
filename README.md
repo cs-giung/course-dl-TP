@@ -23,7 +23,7 @@ python train.py --device cuda
 ```
 python eval.py --device cuda
                --weight ./weights/vgg16_e086_90.pth
-               --attack [None, 'fgsm', 'pgd']
+               --attack [None, 'fgsm', 'linf_pgd', 'l2_pgd']
 ```
 
 | epoch | Original Acc. | FGSM-Attacked Acc. | PGD-Attacked Acc. |
@@ -50,10 +50,10 @@ python train.py --device cuda
 * data augmentation: RandomHorizontalFlip
 ```
 
-| epoch | Original Acc. | FGSM-Attacked Acc. | Linf-PGD-Attacked Acc. |
-| :-:   |  -:           |  -:                |  -:                    |
-| e022  | 74.39 %       | 46.18 %            | 47.76 %                |
-| e040  | 77.62 %       | 43.55 %            | 43.91 %                |
+| epoch | Original Acc. | FGSM-Attacked Acc. | Linf-PGD-Attacked Acc. | L2-PGD Attacked Acc. |
+| :-:   |  -:           |  -:                |  -:                    | -:                   |
+| e022  | 74.39 %       | 46.18 %            | 47.76 %                | 43.32 %              |
+| e040  | 77.62 %       | 43.55 %            | 43.91 %                | 38.57 %              |
 
 #### PGD-Training #2 (L_inf, predicted label)
 
@@ -61,10 +61,10 @@ python train.py --device cuda
     <img width=50% src="./md/plot2.png">
 </p>
 
-| epoch | Original Acc. | FGSM-Attacked Acc. | Linf-PGD-Attacked Acc. |
-| :-:   |  -:           |  -:                |  -:                    |
-| e021  | 78.49 %       | 43.77 %            | 46.47 %                |
-| e035  | 79.03 %       | 43.43 %            | 44.95 %                |
+| epoch | Original Acc. | FGSM-Attacked Acc. | Linf-PGD-Attacked Acc. | L2-PGD Attacked Acc. |
+| :-:   |  -:           |  -:                |  -:                    | -:                   |
+| e021  | 78.49 %       | 43.77 %            | 46.47 %                | 40.61 %              |
+| e035  | 79.03 %       | 43.43 %            | 44.95 %                | 38.74 %              |
 
 #### PGD-Training #3 (L_2, true label)
 
@@ -83,10 +83,10 @@ python train.py --device cuda
 * data augmentation: RandomHorizontalFlip
 ```
 
-| epoch | Original Acc. | FGSM-Attacked Acc. | Linf-PGD-Attacked Acc. |
-| :-:   |  -:           |  -:                |  -:                    |
-| e021  | 71.07 %       | 47.48 %            | 49.57 %                |
-| e040  | 75.42 %       | 45.66 %            | 45.86 %                |
+| epoch | Original Acc. | FGSM-Attacked Acc. | Linf-PGD-Attacked Acc. | L2-PGD Attacked Acc. |
+| :-:   |  -:           |  -:                |  -:                    | -:                   |
+| e021  | 71.07 %       | 47.48 %            | 49.57 %                | 45.30 %              |
+| e040  | 75.42 %       | 45.66 %            | 45.86 %                | 41.00 %              |
 
 #### PGD-Training #4 (L_2, predicted label)
 
@@ -94,10 +94,10 @@ python train.py --device cuda
     <img width=50% src="./md/plot4.png">
 </p>
 
-| epoch | Original Acc. | FGSM-Attacked Acc. | Linf-PGD-Attacked Acc. |
-| :-:   |  -:           |  -:                |  -:                    |
-| e021  | 71.19 %       | 47.20 %            | 48.84 %                |
-| e039  | 74.28 %       | 45.99 %            | 46.56 %                |
+| epoch | Original Acc. | FGSM-Attacked Acc. | Linf-PGD-Attacked Acc. | L2-PGD Attacked Acc. |
+| :-:   |  -:           |  -:                |  -:                    | -:                   |
+| e021  | 71.19 %       | 47.20 %            | 48.84 %                | 45.44 %              |
+| e039  | 74.28 %       | 45.99 %            | 46.56 %                | 41.90 %              |
 
 ## Appendix
 
