@@ -13,7 +13,7 @@ import torchvision.datasets as datasets
 import torchvision.transforms as transforms
 
 from src import VGG
-from src import PGD_Linf, FGSM
+from src import PGD_Linf, FGSM, PGD_L2
 from train_func import AverageMeter, ProgressMeter, accuracy, write_log
 
 
@@ -81,8 +81,8 @@ def main():
     parser.add_argument('--attack', default=None, type=str)
     args = parser.parse_args()
 
-    if args.attack not in [None, 'fgsm', 'pgd']:
-        print('--attack [fgsm or pgd]')
+    if args.attack not in [None, 'fgsm', 'l2_pgd', 'linf_pgd']:
+        print('--attack [fgsm or l2_pgd or linf_pgd]')
         exit()
 
     config = dict()
@@ -107,9 +107,12 @@ def main():
         elif config['attack'] == 'fgsm':
             attack_FGSM = FGSM(model=net)
             _ = test_accuracy(test_loader, net, config, attack=attack_FGSM)
-        elif config['attack'] == 'pgd':
+        elif config['attack'] == 'linf_pgd':
             attack_PGD_Linf = PGD_Linf(model=net)
             _ = test_accuracy(test_loader, net, config, attack=attack_PGD_Linf)
+        elif config['attack'] == 'l2_pgd':
+            attack_PGD_L2 = PGD_L2(model=net)
+            _ = test_accuracy(test_loader, net, config, attack=attack_PGD_L2)
 
     else:
         weights = sorted(os.listdir(config['weight']))
@@ -125,13 +128,17 @@ def main():
 
             # test
             if config['attack'] == None:
-                acc1 = test_accuracy(test_loader, net, config, attack=None)
+                _ = test_accuracy(test_loader, net, config, attack=None)
             elif config['attack'] == 'fgsm':
                 attack_FGSM = FGSM(model=net)
-                acc1 = test_accuracy(test_loader, net, config, attack=attack_FGSM)
-            elif config['attack'] == 'pgd':
+                _ = test_accuracy(test_loader, net, config, attack=attack_FGSM)
+            elif config['attack'] == 'linf_pgd':
                 attack_PGD_Linf = PGD_Linf(model=net)
-                acc1 = test_accuracy(test_loader, net, config, attack=attack_PGD_Linf)
+                _ = test_accuracy(test_loader, net, config, attack=attack_PGD_Linf)
+            elif config['attack'] == 'l2_pgd':
+                attack_PGD_L2 = PGD_L2(model=net)
+                _ = test_accuracy(test_loader, net, config, attack=attack_PGD_L2)
+
             acc1_list.append(acc1.cpu().item())
         print(acc1_list)
 
