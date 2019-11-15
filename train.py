@@ -28,7 +28,6 @@ def get_train_valid_loader(batch_size=32):
     valid_sampler = torch.utils.data.SubsetRandomSampler(indices[40000:])
 
     train_transform = transforms.Compose([
-        # transforms.RandomCrop(32, padding=4),
         transforms.RandomHorizontalFlip(),
         transforms.ToTensor(),
         transforms.Normalize(
@@ -91,7 +90,11 @@ def train(train_loader, net, criterion, log_file,
         labels = labels.to(device=config['device'])
 
         if PGD is not None:
-            images = PGD.perturb(images, labels)
+            if config['pgd_label'] == 0:
+                images = PGD.perturb(images, labels)
+            else:
+                pred_labels = net(images).max(1, keepdim=True)[1].squeeze_()
+                images = PGD.perturb(images, pred_labels)
 
         outputs = net(images)
         loss = criterion(outputs, labels)
@@ -161,6 +164,8 @@ def main():
     parser.add_argument('--lr', default=0.01, type=float)
     parser.add_argument('--lr_decay', default=10, type=int)
     parser.add_argument('--pgd_train', default=None, type=str)
+    parser.add_argument('--pgd_epsilon', default=8, type=int)
+    parser.add_argument('--pgd_label', default=0, type=int)
     args = parser.parse_args()
 
     config = dict()
@@ -170,6 +175,8 @@ def main():
     config['learning_rate'] = args.lr
     config['lr_decay'] = args.lr_decay
     config['pgd_train'] = args.pgd_train
+    config['pgd_epsilon'] = args.pgd_epsilon
+    config['pgd_label'] = args.pgd_label
 
     # CIFAR-10 dataset (40000 + 10000)
     train_loader, valid_loader = get_train_valid_loader(batch_size=config['batch_size'])
@@ -196,10 +203,10 @@ def main():
 
         # train & valid
         if config['pgd_train'] == 'l2':
-            PGD = PGD_L2(model=net)
+            PGD = PGD_L2(model=net, epsilon=config['pgd_epsilon']*4/255)
             _ = train(train_loader, net, criterion, log_file, optimizer, epoch_idx, PGD=PGD, config=config)
         elif config['pgd_train'] == 'linf':
-            PGD = PGD_Linf(model=net)
+            PGD = PGD_Linf(model=net, epsilon=config['pgd_epsilon']*4/255)
             _ = train(train_loader, net, criterion, log_file, optimizer, epoch_idx, PGD=PGD, config=config)
         else:
             _ = train(train_loader, net, criterion, log_file, optimizer, epoch_idx, PGD=None, config=config)
