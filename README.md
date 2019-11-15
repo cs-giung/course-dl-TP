@@ -2,34 +2,23 @@
 
 ### Original Classifier
 
-#### Training
+<p align="center">
+    <img width=50% src="./md/plot0.png">
+</p>
 
 ```
 python train.py --device cuda
-                --epochs 100
+                --epochs 200
                 --batch_size 32
                 --lr 0.01
-                --lr_decay 10
+                --lr_decay 20
 
-* data augmentation: RandomHorizontalFlip, RandomCrop
+* data augmentation: RandomHorizontalFlip
 ```
 
-```
-./weights/vgg16_e086_90.62.pth
-```
-
-#### Evaluation
-
-```
-python eval.py --device cuda
-               --weight ./weights/vgg16_e086_90.pth
-               --attack [None, 'fgsm', 'linf_pgd', 'l2_pgd']
-```
-
-| epoch | Original Acc. | FGSM-Attacked Acc. | PGD-Attacked Acc. |
-| :-:   |  -:           |  -:                |  -:               |
-| [e086](https://drive.google.com/a/korea.ac.kr/file/d/1AB8ipF9e_t0Du7W79sZtQIOFK9Q9waiQ/view?usp=sharing) | 90.73 %       | 25.09 %            |  0.55 %           |
-| -     | 70.89 it/s    | 27.23 it/s         | 4.48 it/s         |
+| epoch | Original Acc. | FGSM-Attacked Acc. | Linf-PGD-Attacked Acc. | L2-PGD Attacked Acc. |
+| :-:   |  -:           |  -:                |  -:                    | -:                   |
+| e076  | 90.19 %       | 34.99 %            | 01.43 %                | 00.67 %              |
 
 ### PGD-Trained Classifier
 
