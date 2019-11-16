@@ -43,8 +43,6 @@ python train.py --device cuda
                 --pgd_train linf
                 --pgd_epsilon 8
                 --pgd_label 0
-
-* data augmentation: RandomHorizontalFlip
 ```
 
 | epoch | Original Acc. | FGSM-Attacked Acc. | Linf-PGD-Attacked Acc. | L2-PGD Attacked Acc. |
@@ -67,8 +65,6 @@ python train.py --device cuda
                 --pgd_train linf
                 --pgd_epsilon 8
                 --pgd_label 1
-
-* data augmentation: RandomHorizontalFlip
 ```
 
 | epoch | Original Acc. | FGSM-Attacked Acc. | Linf-PGD-Attacked Acc. | L2-PGD Attacked Acc. |
@@ -90,8 +86,6 @@ python train.py --device cuda
                 --pgd_train l2
                 --pgd_epsilon 8
                 --pgd_label 0
-
-* data augmentation: RandomHorizontalFlip
 ```
 
 | epoch | Original Acc. | FGSM-Attacked Acc. | Linf-PGD-Attacked Acc. | L2-PGD Attacked Acc. |
@@ -114,8 +108,6 @@ python train.py --device cuda
                 --pgd_train l2
                 --pgd_epsilon 8
                 --pgd_label 1
-
-* data augmentation: RandomHorizontalFlip
 ```
 
 | epoch | Original Acc. | FGSM-Attacked Acc. | Linf-PGD-Attacked Acc. | L2-PGD Attacked Acc. |
