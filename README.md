@@ -3,7 +3,7 @@
 ### Original Classifier
 
 <p align="center">
-    <img width=50% src="./md/plot0.png">
+    <img width=50% src="./md/eps2/plot0.png"><img width=50% src="./md/eps8/plot0.png">
 </p>
 
 ```
