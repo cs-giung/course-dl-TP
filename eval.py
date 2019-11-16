@@ -79,6 +79,7 @@ def main():
     parser.add_argument('--device', default='cuda', type=str)
     parser.add_argument('--weight', default=None, type=str)
     parser.add_argument('--attack', default=None, type=str)
+    parser.add_argument('--epsilon', default=8, type=int)
     args = parser.parse_args()
 
     if args.attack not in [None, 'fgsm', 'l2_pgd', 'linf_pgd']:
@@ -89,6 +90,7 @@ def main():
     config['device'] = args.device
     config['weight'] = args.weight
     config['attack'] = args.attack
+    config['epsilon'] = args.epsilon
 
     # CIFAR-10 dataset (10000)
     test_loader = get_test_loader()
@@ -105,13 +107,13 @@ def main():
         if config['attack'] == None:
             _ = test_accuracy(test_loader, net, config, attack=None)
         elif config['attack'] == 'fgsm':
-            attack_FGSM = FGSM(model=net)
+            attack_FGSM = FGSM(model=net, num_steps=config['pgd_epsilon'])
             _ = test_accuracy(test_loader, net, config, attack=attack_FGSM)
         elif config['attack'] == 'linf_pgd':
-            attack_PGD_Linf = PGD_Linf(model=net)
+            attack_PGD_Linf = PGD_Linf(model=net, epsilon=config['pgd_epsilon']*4/255)
             _ = test_accuracy(test_loader, net, config, attack=attack_PGD_Linf)
         elif config['attack'] == 'l2_pgd':
-            attack_PGD_L2 = PGD_L2(model=net)
+            attack_PGD_L2 = PGD_L2(model=net, epsilon=config['pgd_epsilon']*4/255)
             _ = test_accuracy(test_loader, net, config, attack=attack_PGD_L2)
 
     else:
@@ -130,13 +132,13 @@ def main():
             if config['attack'] == None:
                 acc1 = test_accuracy(test_loader, net, config, attack=None)
             elif config['attack'] == 'fgsm':
-                attack_FGSM = FGSM(model=net)
+                attack_FGSM = FGSM(model=net, num_steps=config['pgd_epsilon'])
                 acc1 = test_accuracy(test_loader, net, config, attack=attack_FGSM)
             elif config['attack'] == 'linf_pgd':
-                attack_PGD_Linf = PGD_Linf(model=net)
+                attack_PGD_Linf = PGD_Linf(model=net, epsilon=config['pgd_epsilon']*4/255)
                 acc1 = test_accuracy(test_loader, net, config, attack=attack_PGD_Linf)
             elif config['attack'] == 'l2_pgd':
-                attack_PGD_L2 = PGD_L2(model=net)
+                attack_PGD_L2 = PGD_L2(model=net, epsilon=config['pgd_epsilon']*4/255)
                 acc1 = test_accuracy(test_loader, net, config, attack=attack_PGD_L2)
 
             acc1_list.append(acc1.cpu().item())

@@ -25,7 +25,7 @@ python train.py --device cuda
 #### PGD-Training #1 (Linf, true label)
 
 <p align="center">
-    <img width=50% src="./md/plot1.png">
+    <img width=50% src="./md/eps8/plot1.png">
 </p>
 
 ```
@@ -49,7 +49,7 @@ python train.py --device cuda
 #### PGD-Training #2 (Linf, predicted label)
 
 <p align="center">
-    <img width=50% src="./md/plot2.png">
+    <img width=50% src="./md/eps8/plot2.png">
 </p>
 
 ```
@@ -72,7 +72,7 @@ python train.py --device cuda
 #### PGD-Training #3 (L2, true label)
 
 <p align="center">
-    <img width=50% src="./md/plot3.png">
+    <img width=50% src="./md/eps8/plot3.png">
 </p>
 
 ```
@@ -96,7 +96,7 @@ python train.py --device cuda
 #### PGD-Training #4 (L2, predicted label)
 
 <p align="center">
-    <img width=50% src="./md/plot4.png">
+    <img width=50% src="./md/eps8/plot4.png">
 </p>
 
 ```

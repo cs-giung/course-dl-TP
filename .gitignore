@@ -5,3 +5,5 @@ data
 *.pth
 
 md/*.py
+md/eps2/*.py
+md/eps8/*.py

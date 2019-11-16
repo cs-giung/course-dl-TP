@@ -162,7 +162,7 @@ def main():
     parser.add_argument('--epochs', default=100, type=int)
     parser.add_argument('--batch_size', default=32, type=int)
     parser.add_argument('--lr', default=0.01, type=float)
-    parser.add_argument('--lr_decay', default=10, type=int)
+    parser.add_argument('--lr_decay', default=20, type=int)
     parser.add_argument('--pgd_train', default=None, type=str)
     parser.add_argument('--pgd_epsilon', default=8, type=int)
     parser.add_argument('--pgd_label', default=0, type=int)
