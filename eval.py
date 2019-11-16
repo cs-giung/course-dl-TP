@@ -107,13 +107,13 @@ def main():
         if config['attack'] == None:
             _ = test_accuracy(test_loader, net, config, attack=None)
         elif config['attack'] == 'fgsm':
-            attack_FGSM = FGSM(model=net, num_steps=config['pgd_epsilon'])
+            attack_FGSM = FGSM(model=net, num_steps=config['epsilon'])
             _ = test_accuracy(test_loader, net, config, attack=attack_FGSM)
         elif config['attack'] == 'linf_pgd':
-            attack_PGD_Linf = PGD_Linf(model=net, epsilon=config['pgd_epsilon']*4/255)
+            attack_PGD_Linf = PGD_Linf(model=net, epsilon=config['epsilon']*4/255)
             _ = test_accuracy(test_loader, net, config, attack=attack_PGD_Linf)
         elif config['attack'] == 'l2_pgd':
-            attack_PGD_L2 = PGD_L2(model=net, epsilon=config['pgd_epsilon']*4/255)
+            attack_PGD_L2 = PGD_L2(model=net, epsilon=config['epsilon']*4/255)
             _ = test_accuracy(test_loader, net, config, attack=attack_PGD_L2)
 
     else:
@@ -132,13 +132,13 @@ def main():
             if config['attack'] == None:
                 acc1 = test_accuracy(test_loader, net, config, attack=None)
             elif config['attack'] == 'fgsm':
-                attack_FGSM = FGSM(model=net, num_steps=config['pgd_epsilon'])
+                attack_FGSM = FGSM(model=net, num_steps=config['epsilon'])
                 acc1 = test_accuracy(test_loader, net, config, attack=attack_FGSM)
             elif config['attack'] == 'linf_pgd':
-                attack_PGD_Linf = PGD_Linf(model=net, epsilon=config['pgd_epsilon']*4/255)
+                attack_PGD_Linf = PGD_Linf(model=net, epsilon=config['epsilon']*4/255)
                 acc1 = test_accuracy(test_loader, net, config, attack=attack_PGD_Linf)
             elif config['attack'] == 'l2_pgd':
-                attack_PGD_L2 = PGD_L2(model=net, epsilon=config['pgd_epsilon']*4/255)
+                attack_PGD_L2 = PGD_L2(model=net, epsilon=config['epsilon']*4/255)
                 acc1 = test_accuracy(test_loader, net, config, attack=attack_PGD_L2)
 
             acc1_list.append(acc1.cpu().item())
