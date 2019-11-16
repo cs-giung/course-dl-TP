@@ -1,10 +1,6 @@
 ## Adversarial Training (CIFAR-10)
 
-### Original Classifier
-
-<p align="center">
-    <img width=50% src="./md/eps2/plot0.png"><img width=50% src="./md/eps8/plot0.png">
-</p>
+### Standard Training
 
 ```
 python train.py --device cuda
@@ -12,9 +8,19 @@ python train.py --device cuda
                 --batch_size 32
                 --lr 0.01
                 --lr_decay 20
-
-* data augmentation: RandomHorizontalFlip
 ```
+
+<p align="center">
+    <img width=50% src="./md/eps2/plot0.png"><img width=50% src="./md/eps8/plot0.png">
+</p>
+
+#### eps = 2/255
+
+| epoch | Original Acc. | FGSM-Attacked Acc. | Linf-PGD-Attacked Acc. | L2-PGD Attacked Acc. |
+| :-:   |  -:           |  -:                |  -:                    | -:                   |
+| e076  | 90.19 %       | 51.35 %            | 18.64 %                | 12.97 %              |
+
+#### eps = 8/255
 
 | epoch | Original Acc. | FGSM-Attacked Acc. | Linf-PGD-Attacked Acc. | L2-PGD Attacked Acc. |
 | :-:   |  -:           |  -:                |  -:                    | -:                   |
