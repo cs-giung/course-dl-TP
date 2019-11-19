@@ -2,7 +2,6 @@ import argparse
 import numpy as np
 import matplotlib.pyplot as plt
 from PIL import Image
-from tqdm import tqdm
 
 import torch
 import torch.nn as nn
@@ -85,8 +84,8 @@ def main():
     atn = ATN(device=device)
 
     # train ATN (as identity)
-    for _ in range(10):
-        atn.train(test_dataloader)
+    for idx in range(100):
+        atn.train(test_dataloader, learning_rate=0.001)
 
     # ATN examples
     for images, labels in test_dataloader:
