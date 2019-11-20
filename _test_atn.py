@@ -52,13 +52,20 @@ def main():
 
     for epoch_idx in range(1, config['atn_epoch'] + 1):
         losses = []
+        l2_lst = []
+        li_lst = []
         for batch_idx, (images, labels) in enumerate(loader):
             if batch_idx == int(config['atn_sample'] * len(loader)):
                 break
             lr = -0.0009 / config['atn_epoch'] * (epoch_idx - 1) + 0.001
-            loss = atn.train(images, labels, learning_rate=lr)
+            loss, l2_dist, li_dist = atn.train(images, labels, learning_rate=lr)
             losses.append(loss)
-        print('[%3d / %3d] Avg. Loss: %f' % (epoch_idx, config['atn_epoch'], sum(losses) / len(losses)))
+            l2_lst.append(l2_dist)
+            li_lst.append(li_dist)
+        avg_loss = sum(losses) / len(losses)
+        avg_l2 = sum(l2_lst) / len(l2_lst)
+        avg_li = sum(li_lst) / len(li_lst)
+        print('[%3d / %3d] Avg.Loss: %f\tAvg.L2-dist: %f\tAvg.Linf-dist:%f' % (epoch_idx, config['atn_epoch'], avg_loss, avg_l2, avg_li))
 
     # ATN examples
     corr = 0
