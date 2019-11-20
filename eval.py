@@ -67,7 +67,7 @@ def main():
     config['epsilon'] = args.epsilon
 
     # CIFAR-10 dataset (10000)
-    test_loader = get_test_loader()
+    test_loader = get_test_loader(batch_size=32)
 
     # classification network
     net = VGG('VGG16').to(device=config['device'])
