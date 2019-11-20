@@ -101,6 +101,13 @@ def main():
         outputs_adv = net(images_adv)
 
         for image, image_adv, output, output_adv in zip(images, images_adv, outputs, outputs_adv):
+
+            l2_dist = torch.norm(image - image_adv, 2).item()
+            linf_dist = torch.norm(image - image_adv, float('inf')).item()
+            print('l2   dist = %.4f' % l2_dist)
+            print('linf dist = %.4f' % linf_dist)
+            print()
+
             img = recover_image(image)
             soft_label = F.softmax(output, dim=0).cpu().detach().numpy()
 
