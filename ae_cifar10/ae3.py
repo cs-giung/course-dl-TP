@@ -30,7 +30,7 @@ class AutoEncoder(nn.Module):
         x = self.decoder(x)
         x = x.view(1, -1)
         x = self.fc(x)
-        x = x.view(2, 3, 32, 32)
+        x = x.view(-1, 3, 32, 32)
         return x
 
 
