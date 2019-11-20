@@ -4,7 +4,13 @@
 
 Adversasrial examples can be generated via neural networks, and these special networks are called Adversarial Transformation Network. This repository verifies that ATN is useful for adversarial training.
 
-* [(arXiv) Adversarial Transformation Networks: Learning to Generate Adversarial Examples](https://arxiv.org/abs/1703.09387)
+* **Adversarial Transformation Networks: Learning to Generate Adversarial Examples** <br>
+  *Shumeeet Baluja, Ian Fischer* <br>
+  https://arxiv.org/abs/1703.09387
+
+* **Towards Deep Learning Models Resistant to Adversarial Attacks** <br>
+  *Aleksander Madry, Aleksandar Makelov, Ludwig Schmidt, Dimitris Tsipras, Adrian Vladu* <br>
+  https://arxiv.org/abs/1706.06083
 
 ## Demo: Adversarial Attack
 
