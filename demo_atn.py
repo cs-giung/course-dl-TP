@@ -89,7 +89,7 @@ def main():
                 continue
             if batch_idx == 9:
                 break
-            atn.train(images, labels)
+            _ = atn.train(images, labels)
 
     # ATN examples
     for images, labels in test_dataloader:

@@ -66,6 +66,8 @@ class ATN():
         loss.backward()
         optimizer.step()
 
+        return loss.item()
+
     def perturb(self, images):
         images = images.to(self.device)
         return self.net(images).detach()
