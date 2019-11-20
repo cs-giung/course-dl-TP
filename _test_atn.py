@@ -44,11 +44,11 @@ def main():
     # train ATN
     if config['atn_scratch']:
         atn = ATN(device=config['device'],
-                  beta=0.99, target_classifier=net)
+                  beta=0.9, target_classifier=net)
     else:
         atn = ATN(device=config['device'],
                   weight='./weights/base_atn_conv.pth',
-                  beta=0.99, target_classifier=net)
+                  beta=0.9, target_classifier=net)
 
     for epoch_idx in range(1, config['atn_epoch'] + 1):
         losses = []
