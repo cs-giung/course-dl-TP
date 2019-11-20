@@ -24,9 +24,8 @@ python demo_pgd.py --device cpu
 
 python demo_atn.py --device cpu
 ```
-The PGD on the left side works by calculating the gradients for a given classification network (we assume a white-box in this situation).
 
-However, in the case of ATN on right side, note that it is only possible to produce valid results after a proper learning has been achieved (this is not satisfactory in this demonstration, and the cat image is just a specially easy case).
+The PGD on left side works by calculating the gradients for a given classification network (we assume a white-box in this situation), and it can almost always produce valid results for typical images without pre-requirements. However, in the case of ATN on right side, note that it is only possible to produce valid results after a proper learning has been achieved (this is not satisfactory in this demonstration, and the cat image is just a specially easy case).
 
 ## Result: Adversarial Training
 
