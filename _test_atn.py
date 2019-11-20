@@ -36,7 +36,8 @@ def main():
     net.eval()
 
     # test dataset
-    train_loader, _ = get_train_valid_loader(batch_size=32)
+    # loader, _ = get_train_valid_loader(batch_size=32)
+    loader = get_test_loader(batch_size=32)
 
     # train ATN
     atn = ATN(device=config['device'],
@@ -45,8 +46,8 @@ def main():
 
     for epoch_idx in range(1, config['atn_epoch'] + 1):
         losses = []
-        for batch_idx, (images, labels) in enumerate(train_loader):
-            if batch_idx == int(config['atn_sample'] * len(train_loader)):
+        for batch_idx, (images, labels) in enumerate(loader):
+            if batch_idx == int(config['atn_sample'] * len(loader)):
                 break
             loss = atn.train(images, labels)
             losses.append(loss)
@@ -57,7 +58,7 @@ def main():
     corr_adv = 0
     l2_lst = []
     linf_lst = []
-    for batch_idx, (images, labels) in enumerate(train_loader, start=1):
+    for batch_idx, (images, labels) in enumerate(loader, start=1):
 
         images = images.to(config['device'])
         images_adv = atn.perturb(images)
@@ -88,7 +89,7 @@ def main():
         
     a = sum(l2_lst) / len(l2_lst)
     b = sum(linf_lst) / len(linf_lst)
-    print('[%5d/%5d] corr:%5d\tcorr_adv:%5d\tavg.l2:%.4f\tavg.linf:%.4f' % (batch_idx, len(train_loader), corr, corr_adv, a, b))
+    print('[%5d/%5d] corr:%5d\tcorr_adv:%5d\tavg.l2:%.4f\tavg.linf:%.4f' % (batch_idx, len(loader), corr, corr_adv, a, b))
 
 
 if __name__ == '__main__':
