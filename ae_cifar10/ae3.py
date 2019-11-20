@@ -23,12 +23,12 @@ class AutoEncoder(nn.Module):
             nn.ReLU()
         )
 
-        self.fc = nn.Linear(2*3*32*32, 2*3*32*32)
+        self.fc = nn.Linear(3*32*32, 3*32*32)
 
     def forward(self, x):
         x = self.encoder(x)
         x = self.decoder(x)
-        x = x.view(1, -1)
+        x = x.view(x.size(0), -1)
         x = self.fc(x)
         x = x.view(-1, 3, 32, 32)
         return x
