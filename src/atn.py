@@ -61,6 +61,7 @@ class ATN():
         loss2 = -self.loss_fn2(outputs_adv, labels)
 
         # loss = self.beta * loss1 + (1 - self.beta) * loss2
+        print(loss1)
         loss = torch.exp(loss1) + loss2
 
         optimizer.zero_grad()
