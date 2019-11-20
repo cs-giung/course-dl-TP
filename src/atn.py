@@ -33,9 +33,10 @@ class _atn_conv(nn.Module):
 
 class ATN():
 
-    def __init__(self, device, target_classifier):
+    def __init__(self, device, beta=0.99, target_classifier=None):
 
         self.device = device
+        self.beta = beta
         self.target_classifier = target_classifier
 
         self.net = _atn_conv().to(self.device)
@@ -57,7 +58,7 @@ class ATN():
             outputs_adv = self.target_classifier(images_adv)
             loss2 = -self.loss_fn2(outputs_adv, labels)
 
-            loss = 0.99 * loss1 + 0.01 * loss2
+            loss = self.beta * loss1 + (1 - self.beta) * loss2
 
             optimizer.zero_grad()
             loss.backward()

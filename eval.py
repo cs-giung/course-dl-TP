@@ -14,7 +14,7 @@ import torchvision.transforms as transforms
 
 from src import VGG
 from src import PGD_Linf, FGSM, PGD_L2
-from train_func import AverageMeter, ProgressMeter, accuracy, write_log
+from src import AverageMeter, ProgressMeter, accuracy, write_log
 
 
 torch.manual_seed(0)
