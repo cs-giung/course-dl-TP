@@ -39,9 +39,9 @@ class ATN():
         self.net = _atn_conv().to(self.device)
 
         self.loss_fn1 = nn.MSELoss()
-        self.loss_fn2 = None
+        self.loss_fn2 = nn.CrossEntropyLoss()
 
-    def train(self, train_loader, learning_rate):
+    def train(self, classifier, train_loader, learning_rate):
 
         optimizer = optim.Adam(self.net.parameters(), lr=learning_rate)
 
@@ -50,11 +50,13 @@ class ATN():
             images = images.to(self.device)
             labels = labels.to(self.device)
 
-            outputs = self.net(images)
+            images_adv = self.net(images)
+            loss1 = self.loss_fn1(images_adv, images)
 
-            loss1 = self.loss_fn1(outputs, images)
-            loss2 = 1
-            loss = 0.1 * loss1 + 0.9 + loss2
+            outputs_adv = classifier(images_adv)
+            loss2 = -self.loss_fn2(outputs_adv, labels)
+
+            loss = 0.99 * loss1 + 0.01 * loss2
 
             optimizer.zero_grad()
             loss.backward()

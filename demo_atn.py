@@ -85,7 +85,7 @@ def main():
 
     # train ATN (as identity)
     for idx in range(100):
-        atn.train(test_dataloader, learning_rate=0.001)
+        atn.train(net, test_dataloader, learning_rate=0.001)
 
     # ATN examples
     for images, labels in test_dataloader:
