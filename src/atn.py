@@ -44,7 +44,7 @@ class ATN():
             state_dict = torch.load(weight, map_location=device)
             self.net.load_state_dict(state_dict)
 
-        self.loss_fn1 = nn.MSELoss()
+        self.loss_fn1 = nn.BCELoss()
         self.loss_fn2 = nn.CrossEntropyLoss()
 
     def train(self, images, labels, learning_rate=0.001):
@@ -55,12 +55,12 @@ class ATN():
         labels = labels.to(self.device)
 
         images_adv = self.net(images)
-        loss1 = self.loss_fn1(images_adv, images)
+        loss1 = self.loss_fn1(images_adv * 0.25 + 0.5, images * 0.25 + 0.5)
 
         outputs_adv = self.target_classifier(images_adv)
         loss2 = -self.loss_fn2(outputs_adv, labels)
 
-        print(torch.norm(images - images_adv, p=2), torch.norm(images - images_adv, p=float('inf')))
+        print(torch.norm(images - images_adv, p=2).item(), torch.norm(images - images_adv, p=float('inf')).item())
         loss = self.beta * loss1 + (1 - self.beta) * loss2
 
         optimizer.zero_grad()
