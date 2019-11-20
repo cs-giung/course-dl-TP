@@ -81,11 +81,11 @@ def main():
     test_dataloader = get_test_dataloader()
 
     # ATN instance
-    atn = ATN(device=device)
+    atn = ATN(device=device, target_classifier=net)
 
-    # train ATN (as identity)
+    # train ATN
     for idx in range(100):
-        atn.train(net, test_dataloader, learning_rate=0.001)
+        atn.train(test_dataloader, learning_rate=0.001)
 
     # ATN examples
     for images, labels in test_dataloader:
