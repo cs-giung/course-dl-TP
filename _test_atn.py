@@ -55,7 +55,8 @@ def main():
         for batch_idx, (images, labels) in enumerate(loader):
             if batch_idx == int(config['atn_sample'] * len(loader)):
                 break
-            loss = atn.train(images, labels, learning_rate=0.0001)
+            lr = -0.0009 / config['atn_epoch'] * (epoch_idx - 1) + 0.001
+            loss = atn.train(images, labels, learning_rate=lr)
             losses.append(loss)
         print('[%3d / %3d] Avg. Loss: %f' % (epoch_idx, config['atn_epoch'], sum(losses) / len(losses)))
 
