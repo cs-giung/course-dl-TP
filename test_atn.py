@@ -50,6 +50,7 @@ def main():
     parser.add_argument('--device', default='cuda', type=str)
     parser.add_argument('--epochs', default=100, type=int)
     parser.add_argument('--batch_size', default=32, type=int)
+    parser.add_argument('--atn_epoch', default=10, type=int)
     parser.add_argument('--atn_sample', default=0.1, type=float)
     args = parser.parse_args()
 
@@ -58,6 +59,7 @@ def main():
     config['device'] = args.device
     config['num_epoch'] = args.epochs
     config['batch_size'] = args.batch_size
+    config['atn_epoch'] = args.atn_epoch
     config['atn_sample'] = args.atn_sample
     weight_path = './weights/vgg16_e086_90.62.pth'
 
@@ -74,15 +76,15 @@ def main():
     atn = ATN(device=config['device'],
               weight='./weights/base_atn_conv.pth',
               beta=0.99, target_classifier=net)
-    num_epoch = 100
-    for epoch_idx in range(1, num_epoch + 1):
+
+    for epoch_idx in range(1, config['atn_epoch'] + 1):
         losses = []
         for batch_idx, (images, labels) in enumerate(test_dataloader):
             if batch_idx == int(config['atn_sample'] * len(test_dataloader)):
                 break
             loss = atn.train(images, labels)
             losses.append(loss)
-        print('[%3d / %3d] Avg. Loss: %f' % (epoch_idx, num_epoch, sum(losses) / len(losses)))
+        print('[%3d / %3d] Avg. Loss: %f' % (epoch_idx, config['atn_epoch'], sum(losses) / len(losses)))
 
     # ATN examples
     corr = 0
