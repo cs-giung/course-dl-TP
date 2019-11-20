@@ -194,12 +194,12 @@ def main():
             optimizer = optim.SGD(net.parameters(), lr=learning_rate, momentum=0.9, weight_decay=5e-4)
 
         # train ATN
-        ATN = ATN(device=config['device'], target_classifier=net)
+        ATN_cls = ATN(device=config['device'], target_classifier=net)
         for _ in range(100):
-            ATN.train(train_loader=train_loader, learning_rate=0.001)
+            ATN_cls.train(train_loader=train_loader, learning_rate=0.001)
 
         # train & valid
-        _ = train(train_loader, net, criterion, log_file, optimizer, epoch_idx, ATN=ATN, config=config)
+        _ = train(train_loader, net, criterion, log_file, optimizer, epoch_idx, ATN=ATN_cls, config=config)
         valid_acc1 = valid(valid_loader, net, criterion, log_file, config=config)
 
         # save best
