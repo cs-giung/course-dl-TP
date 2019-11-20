@@ -80,12 +80,16 @@ def main():
     # test dataset
     test_dataloader = get_test_dataloader()
 
-    # ATN instance
-    atn = ATN(device=device, target_classifier=net)
-
     # train ATN
-    for idx in range(100):
-        atn.train(test_dataloader, learning_rate=0.001)
+    atn = ATN(device=device, weight='./weights/base_atn_conv.pth', target_classifier=net)
+    for epoch_idx in range(5):
+        print(epoch_idx)
+        for batch_idx, (images, labels) in enumerate(test_dataloader):
+            if batch_idx == 0:
+                continue
+            if batch_idx == 9:
+                break
+            atn.train(images, labels)
 
     # ATN examples
     for images, labels in test_dataloader:
