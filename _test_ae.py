@@ -9,7 +9,7 @@ import torch.backends.cudnn as cudnn
 from src import get_train_valid_loader
 from src import get_test_loader
 from src import AverageMeter, ProgressMeter
-from ae_cifar10.conv import ConvAutoencoder
+from ae_cifar10.ae2 import AutoEncoder
 
 
 torch.manual_seed(0)
@@ -94,7 +94,7 @@ def main():
 
     train_loader, valid_loader = get_train_valid_loader(batch_size=32)
 
-    net = ConvAutoencoder().to(config['device'])
+    net = AutoEncoder().to(config['device'])
     optimizer = optim.Adam(net.parameters())
     criterion = nn.MSELoss()
 

@@ -1,10 +1,10 @@
 import torch.nn as nn
 
 
-class ConvAutoencoder(nn.Module):
+class AutoEncoder(nn.Module):
 
     def __init__(self):
-        super(ConvAutoencoder, self).__init__()
+        super(ae1, self).__init__()
         self.encoder = nn.Sequential(
             nn.Conv2d(3, 16, 3, padding=1),
             nn.ReLU(inplace=True),
