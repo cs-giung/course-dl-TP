@@ -8,66 +8,14 @@ import torch.nn as nn
 import torch.optim as optim
 import torch.backends.cudnn as cudnn
 
-import torchvision.datasets as datasets
-import torchvision.transforms as transforms
-
-from src import VGG
-from src import ATN
+from src import get_train_valid_loader
+from src import VGG, ATN
 from src import AverageMeter, ProgressMeter, accuracy, write_log
 
 
 torch.manual_seed(0)
 torch.cuda.manual_seed_all(0)
 cudnn.benchmark = True
-
-
-def get_train_valid_loader(batch_size=32):
-
-    indices = list(range(50000))
-    train_sampler = torch.utils.data.SubsetRandomSampler(indices[:40000])
-    valid_sampler = torch.utils.data.SubsetRandomSampler(indices[40000:])
-
-    train_transform = transforms.Compose([
-        transforms.RandomHorizontalFlip(),
-        transforms.ToTensor(),
-        transforms.Normalize(
-            (0.500, 0.500, 0.500),
-            (0.250, 0.250, 0.250)
-        )
-    ])
-
-    valid_transform = transforms.Compose([
-        transforms.ToTensor(),
-        transforms.Normalize(
-            (0.500, 0.500, 0.500),
-            (0.250, 0.250, 0.250)
-        )
-    ])
-
-    train_dataset = datasets.CIFAR10(
-        root='./data', train=True, download=True,
-        transform=train_transform
-    )
-
-    valid_dataset = datasets.CIFAR10(
-        root='./data', train=True, download=True,
-        transform=valid_transform
-    )
-
-    train_dataloader = torch.utils.data.DataLoader(
-        dataset=train_dataset,
-        batch_size=batch_size,
-        sampler=train_sampler,
-        drop_last=True,
-    )
-
-    valid_dataloader = torch.utils.data.DataLoader(
-        dataset=valid_dataset,
-        batch_size=batch_size,
-        sampler=valid_sampler,
-    )
-
-    return train_dataloader, valid_dataloader
 
 
 def train(train_loader, net, criterion, log_file,

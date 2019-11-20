@@ -5,80 +5,9 @@ import torch
 import torch.nn as nn
 import torch.optim as optim
 import torch.nn.functional as F
-import torchvision.datasets as datasets
-import torchvision.transforms as transforms
 
-from src import VGG
-from src import ATN
-
-
-ind2class = ('plane', 'car', 'bird', 'cat', 'deer',
-             'dog', 'frog', 'horse', 'ship', 'truck')
-
-def get_test_dataloader(batch_size):
-
-    test_transform = transforms.Compose([
-        transforms.ToTensor(),
-        transforms.Normalize(
-            (0.500, 0.500, 0.500),
-            (0.250, 0.250, 0.250)
-        )
-    ])
-    test_dataset = datasets.CIFAR10(
-        root='./data', train=False, download=True,
-        transform=test_transform
-    )
-    test_dataloader = torch.utils.data.DataLoader(dataset=test_dataset, batch_size=batch_size)
-    return test_dataloader
-
-
-def get_train_valid_loader(batch_size=32):
-
-    indices = list(range(50000))
-    train_sampler = torch.utils.data.SubsetRandomSampler(indices[:40000])
-    valid_sampler = torch.utils.data.SubsetRandomSampler(indices[40000:])
-
-    train_transform = transforms.Compose([
-        transforms.RandomHorizontalFlip(),
-        transforms.ToTensor(),
-        transforms.Normalize(
-            (0.500, 0.500, 0.500),
-            (0.250, 0.250, 0.250)
-        )
-    ])
-
-    valid_transform = transforms.Compose([
-        transforms.ToTensor(),
-        transforms.Normalize(
-            (0.500, 0.500, 0.500),
-            (0.250, 0.250, 0.250)
-        )
-    ])
-
-    train_dataset = datasets.CIFAR10(
-        root='./data', train=True, download=True,
-        transform=train_transform
-    )
-
-    valid_dataset = datasets.CIFAR10(
-        root='./data', train=True, download=True,
-        transform=valid_transform
-    )
-
-    train_dataloader = torch.utils.data.DataLoader(
-        dataset=train_dataset,
-        batch_size=batch_size,
-        sampler=train_sampler,
-        drop_last=True,
-    )
-
-    valid_dataloader = torch.utils.data.DataLoader(
-        dataset=valid_dataset,
-        batch_size=batch_size,
-        sampler=valid_sampler,
-    )
-
-    return train_dataloader, valid_dataloader
+from src import get_test_loader, get_train_valid_loader
+from src import VGG, ATN
 
 
 def main():
