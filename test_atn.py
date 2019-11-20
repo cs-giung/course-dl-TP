@@ -34,14 +34,53 @@ def get_test_dataloader(batch_size):
     return test_dataloader
 
 
-def recover_image(image):
-    img = image.cpu().numpy()
-    img = 0.250 * img + 0.500
-    img = (img * 255).astype('uint8')
-    img = np.clip(img, 0, 255)
-    img = img.transpose(1, 2, 0)
-    img = Image.fromarray(img, 'RGB')
-    return img
+def get_train_valid_loader(batch_size=32):
+
+    indices = list(range(50000))
+    train_sampler = torch.utils.data.SubsetRandomSampler(indices[:40000])
+    valid_sampler = torch.utils.data.SubsetRandomSampler(indices[40000:])
+
+    train_transform = transforms.Compose([
+        transforms.RandomHorizontalFlip(),
+        transforms.ToTensor(),
+        transforms.Normalize(
+            (0.500, 0.500, 0.500),
+            (0.250, 0.250, 0.250)
+        )
+    ])
+
+    valid_transform = transforms.Compose([
+        transforms.ToTensor(),
+        transforms.Normalize(
+            (0.500, 0.500, 0.500),
+            (0.250, 0.250, 0.250)
+        )
+    ])
+
+    train_dataset = datasets.CIFAR10(
+        root='./data', train=True, download=True,
+        transform=train_transform
+    )
+
+    valid_dataset = datasets.CIFAR10(
+        root='./data', train=True, download=True,
+        transform=valid_transform
+    )
+
+    train_dataloader = torch.utils.data.DataLoader(
+        dataset=train_dataset,
+        batch_size=batch_size,
+        sampler=train_sampler,
+        drop_last=True,
+    )
+
+    valid_dataloader = torch.utils.data.DataLoader(
+        dataset=valid_dataset,
+        batch_size=batch_size,
+        sampler=valid_sampler,
+    )
+
+    return train_dataloader, valid_dataloader
 
 
 def main():
@@ -70,7 +109,7 @@ def main():
     net.eval()
 
     # test dataset
-    test_dataloader = get_test_dataloader(batch_size=32)
+    train_loader, valid_loader = get_train_valid_loader(batch_size=32)
 
     # train ATN
     atn = ATN(device=config['device'],
@@ -79,8 +118,8 @@ def main():
 
     for epoch_idx in range(1, config['atn_epoch'] + 1):
         losses = []
-        for batch_idx, (images, labels) in enumerate(test_dataloader):
-            if batch_idx == int(config['atn_sample'] * len(test_dataloader)):
+        for batch_idx, (images, labels) in enumerate(train_loader):
+            if batch_idx == int(config['atn_sample'] * len(train_loader)):
                 break
             loss = atn.train(images, labels)
             losses.append(loss)
@@ -91,7 +130,7 @@ def main():
     corr_adv = 0
     l2_lst = []
     linf_lst = []
-    for batch_idx, (images, labels) in enumerate(test_dataloader, start=1):
+    for batch_idx, (images, labels) in enumerate(train_loader, start=1):
 
         images = images.to(config['device'])
         images_adv = atn.perturb(images)
