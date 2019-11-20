@@ -18,6 +18,7 @@ def main():
     parser.add_argument('--batch_size', default=32, type=int)
     parser.add_argument('--atn_epoch', default=10, type=int)
     parser.add_argument('--atn_sample', default=0.1, type=float)
+    parser.add_argument('--atn_scratch', default=0, type=int)
     args = parser.parse_args()
 
     # settings
@@ -27,6 +28,7 @@ def main():
     config['batch_size'] = args.batch_size
     config['atn_epoch'] = args.atn_epoch
     config['atn_sample'] = args.atn_sample
+    config['atn_scratch'] = args.atn_scratch
     weight_path = './weights/vgg16_e086_90.62.pth'
 
     # classification model
@@ -40,9 +42,13 @@ def main():
     loader = get_test_loader(batch_size=32)
 
     # train ATN
-    atn = ATN(device=config['device'],
-              weight='./weights/base_atn_conv.pth',
-              beta=0.99, target_classifier=net)
+    if config['atn_scratch']:
+        atn = ATN(device=config['device'],
+                  beta=0.99, target_classifier=net)
+    else:
+        atn = ATN(device=config['device'],
+                  weight='./weights/base_atn_conv.pth',
+                  beta=0.99, target_classifier=net)
 
     for epoch_idx in range(1, config['atn_epoch'] + 1):
         losses = []
