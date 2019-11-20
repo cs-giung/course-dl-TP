@@ -12,7 +12,7 @@ import torchvision.datasets as datasets
 import torchvision.transforms as transforms
 
 from src import VGG
-from src import PGD_Linf, PGD_L2
+from src import ATN
 from src import AverageMeter, ProgressMeter, accuracy, write_log
 
 
@@ -71,7 +71,7 @@ def get_train_valid_loader(batch_size=32):
 
 
 def train(train_loader, net, criterion, log_file,
-          optimizer, epoch, PGD=None, config=None):
+          optimizer, epoch, ATN, config=None):
 
     batch_time = AverageMeter('Time', ':6.3f')
     losses = AverageMeter('Loss', ':.4e')
@@ -89,12 +89,7 @@ def train(train_loader, net, criterion, log_file,
         images = images.to(device=config['device'])
         labels = labels.to(device=config['device'])
 
-        if PGD is not None:
-            if config['pgd_label'] == 0:
-                images = PGD.perturb(images, labels)
-            else:
-                pred_labels = net(images).max(1, keepdim=True)[1].squeeze_()
-                images = PGD.perturb(images, pred_labels)
+        images = ATN.perturb(images)
 
         outputs = net(images)
         loss = criterion(outputs, labels)
@@ -163,9 +158,8 @@ def main():
     parser.add_argument('--batch_size', default=32, type=int)
     parser.add_argument('--lr', default=0.01, type=float)
     parser.add_argument('--lr_decay', default=20, type=int)
-    parser.add_argument('--pgd_train', default=None, type=str)
-    parser.add_argument('--pgd_epsilon', default=8, type=int)
-    parser.add_argument('--pgd_label', default=0, type=int)
+    parser.add_argument('--atn_epoch', default=100, type=int)
+    parser.add_argument('--atn_sample', default=0.1, type=float)
     args = parser.parse_args()
 
     config = dict()
@@ -174,9 +168,8 @@ def main():
     config['batch_size'] = args.batch_size
     config['learning_rate'] = args.lr
     config['lr_decay'] = args.lr_decay
-    config['pgd_train'] = args.pgd_train
-    config['pgd_epsilon'] = args.pgd_epsilon
-    config['pgd_label'] = args.pgd_label
+    config['atn_epoch'] = args.atn_epoch
+    config['atn_sample'] = args.atn_sample
 
     # CIFAR-10 dataset (40000 + 10000)
     train_loader, valid_loader = get_train_valid_loader(batch_size=config['batch_size'])
@@ -190,7 +183,7 @@ def main():
     optimizer = optim.SGD(net.parameters(), lr=learning_rate, momentum=0.9, weight_decay=5e-4)
     best_valid_acc1 = 0
 
-    output_path = './train_{:%Y-%m-%d-%H-%M-%S}/'.format(datetime.now())
+    output_path = './train_atn_{:%Y-%m-%d-%H-%M-%S}/'.format(datetime.now())
     log_file = output_path + 'train_log.txt'
     os.mkdir(output_path)
 
@@ -201,15 +194,20 @@ def main():
             learning_rate *= 0.5
             optimizer = optim.SGD(net.parameters(), lr=learning_rate, momentum=0.9, weight_decay=5e-4)
 
+        # train ATN
+        atn = ATN(device=config['device'], weight='./weights/base_atn_conv.pth', beta=0.99, target_classifier=net)
+        for epoch_idx_atn in range(1, config['atn_epoch'] + 1):
+            losses = []
+            for batch_idx, (images, labels) in enumerate(train_loader):
+                if batch_idx == int(config['atn_sample'] * len(train_loader)):
+                    break
+                loss = atn.train(images, labels)
+                losses.append(loss)
+            if epoch_idx_atn % 10 == 0:
+                print('[%3d / %3d] Avg. Loss: %f' % (epoch_idx_atn, config['atn_epoch'], sum(losses) / len(losses)))
+
         # train & valid
-        if config['pgd_train'] == 'l2':
-            PGD = PGD_L2(model=net, epsilon=config['pgd_epsilon']*4/255)
-            _ = train(train_loader, net, criterion, log_file, optimizer, epoch_idx, PGD=PGD, config=config)
-        elif config['pgd_train'] == 'linf':
-            PGD = PGD_Linf(model=net, epsilon=config['pgd_epsilon']*4/255)
-            _ = train(train_loader, net, criterion, log_file, optimizer, epoch_idx, PGD=PGD, config=config)
-        else:
-            _ = train(train_loader, net, criterion, log_file, optimizer, epoch_idx, PGD=None, config=config)
+        _ = train(train_loader, net, criterion, log_file, optimizer, epoch_idx, ATN=atn, config=config)
         valid_acc1 = valid(valid_loader, net, criterion, log_file, config=config)
 
         # save best
