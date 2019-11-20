@@ -110,7 +110,7 @@ def main():
         outputs = net(images)
         l2_lst.append(torch.norm(images - outputs, 2).item())
         linf_lst.append(torch.norm(images - outputs, float('inf')).item())
-        if batch_idx % 1000:
+        if batch_idx % 1000 == 0:
             avg_l2 = sum(l2_lst) / len(l2_lst)
             avg_linf = sum(linf_lst) / len(linf_lst)
             print('[%5d] l2: %.4f\tlinf:%.4f' % (batch_idx, avg_l2, avg_linf))
