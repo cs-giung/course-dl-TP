@@ -58,7 +58,7 @@ def main():
             if batch_idx == int(config['atn_sample'] * len(loader)):
                 break
             # lr = -0.0009 / config['atn_epoch'] * (epoch_idx - 1) + 0.001
-            lr = 0.0001
+            lr = 1e-5
             loss, l2_dist, li_dist = atn.train(images, labels, learning_rate=lr)
             losses.append(loss)
             l2_lst.append(l2_dist)
