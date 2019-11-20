@@ -62,7 +62,7 @@ class ATN():
 
         print(loss1.item(), loss2.item())
         # loss = self.beta * loss1 + (1 - self.beta) * loss2
-        loss = loss1 + torch.exp(loss2)
+        loss = 100 * loss1 + torch.exp(loss2)
 
         optimizer.zero_grad()
         loss.backward()
