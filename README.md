@@ -14,25 +14,18 @@ Adversasrial examples can be generated via neural networks, and these special ne
 
 ## Demo: Adversarial Attack
 
-### PGD Attack
-
 ```
 python demo_pgd.py --device cpu
-                   --pgd_type [linf, l2]
+                   --pgd_type linf
+
+python demo_atn.py --device cpu
 ```
+The PGD on the left side works by calculating the gradients for a given classification network (we assume a white-box in this situation).
+
+However, in the case of ATN on right side, note that it is only possible to produce valid results after a proper learning has been achieved (this is not satisfactory in this demonstration, and the cat image is just a specially easy case).
 
 <p align="center">
-    <img width=50% src="./md/demo1.png">
-</p>
-
-### ATN Attack
-
-```
-python demo_atn.py --device cuda
-```
-
-<p align="center">
-    <img width=50% src="./md/demo2.png">
+    <img width=50% src="./md/demo1.png"><img width=50% src="./md/demo2.png">
 </p>
 
 ## Result: Adversarial Training

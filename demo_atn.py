@@ -82,7 +82,7 @@ def main():
 
     # train ATN
     atn = ATN(device=device, weight='./weights/base_atn_conv.pth', beta=0.99, target_classifier=net)
-    for epoch_idx in range(10):
+    for epoch_idx in range(1):
         print(epoch_idx)
         for batch_idx, (images, labels) in enumerate(test_dataloader):
             if batch_idx == 0:
@@ -102,17 +102,18 @@ def main():
 
         for image, image_adv, output, output_adv in zip(images, images_adv, outputs, outputs_adv):
 
-            l2_dist = torch.norm(image - image_adv, 2).item()
-            linf_dist = torch.norm(image - image_adv, float('inf')).item()
-            print('l2   dist = %.4f' % l2_dist)
-            print('linf dist = %.4f' % linf_dist)
-            print()
-
             img = recover_image(image)
             soft_label = F.softmax(output, dim=0).cpu().detach().numpy()
 
             img_adv = recover_image(image_adv)
             soft_label_adv = F.softmax(output_adv, dim=0).cpu().detach().numpy()
+
+            l2_dist = torch.norm(image - image_adv, 2).item()
+            linf_dist = torch.norm(image - image_adv, float('inf')).item()
+            print('%s -> %s' % (ind2class[np.argmax(soft_label)], ind2class[np.argmax(soft_label_adv)]))
+            print('l2   dist = %.4f' % l2_dist)
+            print('linf dist = %.4f' % linf_dist)
+            print()
 
             plot_comparison(img, img_adv, soft_label, soft_label_adv)
             plt.show()
