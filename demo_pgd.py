@@ -73,6 +73,7 @@ def main():
     for images, labels in test_dataloader:
 
         images = images.to(device)
+        labels = labels.to(device)
         images_adv = PGD.perturb(images, labels)
 
         outputs = net(images)
