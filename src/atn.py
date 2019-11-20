@@ -60,9 +60,8 @@ class ATN():
         outputs_adv = self.target_classifier(images_adv)
         loss2 = -self.loss_fn2(outputs_adv, labels)
 
-        print(loss1.item(), loss2.item())
-        # loss = self.beta * loss1 + (1 - self.beta) * loss2
-        loss = 100 * loss1 + torch.exp(loss2)
+        print(torch.norm(images - images_adv, p=2), torch.norm(images - images_adv, p=float('inf')))
+        loss = self.beta * loss1 + (1 - self.beta) * loss2
 
         optimizer.zero_grad()
         loss.backward()
