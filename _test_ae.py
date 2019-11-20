@@ -100,3 +100,7 @@ def main():
     for epoch_idx in range(1, config['num_epoch'] + 1):
         train_loss = train(train_loader, net, criterion, optimizer, epoch_idx, config)
         valid_loss = valid(valid_loader, net, criterion, config)
+
+
+if __name__ == '__main__':
+    main()
