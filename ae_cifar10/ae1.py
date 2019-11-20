@@ -4,29 +4,26 @@ import torch.nn as nn
 class AutoEncoder(nn.Module):
 
     def __init__(self):
-        super(ae1, self).__init__()
-        self.encoder = nn.Sequential(
-            nn.Conv2d(3, 16, 3, padding=1),
-            nn.ReLU(inplace=True),
-            nn.MaxPool2d(2),
-            nn.Conv2d(16, 8, 3, padding=1),
-            nn.ReLU(inplace=True),
-            nn.MaxPool2d(2)
+        super(AutoEncoder, self).__init__()
+        self.conv = nn.Sequential(
+            nn.Conv2d(3, 12, 3),
+            nn.ReLU(),
+            nn.Conv2d(12, 24, 3),
+            nn.ReLU(),
+            nn.Conv2d(24, 48, 3),
+            nn.ReLU(),
         )
-
-        self.decoder = nn.Sequential(
-            nn.Conv2d(8, 8, 3, padding=1),
-            nn.ReLU(inplace=True),
-            nn.UpsamplingBilinear2d(scale_factor=2),
-            nn.Conv2d(8, 16, 3, padding=1),
-            nn.ReLU(inplace=True),
-            nn.UpsamplingBilinear2d(scale_factor=2),
-            nn.Conv2d(16, 3, 3, padding=1),
-            nn.Tanh()
+        self.deconv = nn.Sequential(
+            nn.ConvTranspose2d(48, 24, 3),
+            nn.ReLU(),
+            nn.ConvTranspose2d(24, 12, 3),
+            nn.ReLU(),
+            nn.ConvTranspose2d(12, 3, 3),
+            nn.Tanh(),
         )
 
     def forward(self, x):
-        x = self.encoder(x)
-        x = self.decoder(x)
-        x = 2 * x
-        return x
+        x = self.conv(x)
+        x = self.deconv(x)
+        out = 2 * x
+        return out
