@@ -33,10 +33,9 @@ class _atn_conv(nn.Module):
 
 class ATN():
 
-    def __init__(self, device, weight=None, beta=0.99, target_classifier=None):
+    def __init__(self, device, weight=None, target_classifier=None):
 
         self.device = device
-        self.beta = beta
         self.target_classifier = target_classifier
 
         self.net = _atn_conv().to(device)
@@ -47,7 +46,7 @@ class ATN():
         self.loss_fn1 = nn.MSELoss()
         self.loss_fn2 = nn.CrossEntropyLoss()
 
-    def train(self, images, labels, learning_rate=0.001):
+    def train(self, images, labels, beta=0.99, learning_rate=0.001):
 
         optimizer = optim.Adam(self.net.parameters(), lr=learning_rate)
 
@@ -60,7 +59,7 @@ class ATN():
         outputs_adv = self.target_classifier(images_adv)
         loss2 = -self.loss_fn2(outputs_adv, labels)
 
-        loss = self.beta * loss1 + (1 - self.beta) * loss2
+        loss = beta * loss1 + (1 - beta) * loss2
 
         l2s = []
         lis = []

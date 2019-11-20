@@ -44,11 +44,11 @@ def main():
     # train ATN
     if config['atn_scratch']:
         atn = ATN(device=config['device'],
-                  beta=0.9, target_classifier=net)
+                  target_classifier=net)
     else:
         atn = ATN(device=config['device'],
                   weight='./weights/base_atn_conv.pth',
-                  beta=0.9, target_classifier=net)
+                  target_classifier=net)
 
     for epoch_idx in range(1, config['atn_epoch'] + 1):
         losses = []
@@ -59,7 +59,7 @@ def main():
                 break
             # lr = -0.0009 / config['atn_epoch'] * (epoch_idx - 1) + 0.001
             lr = 1e-4
-            loss, l2_dist, li_dist = atn.train(images, labels, learning_rate=lr)
+            loss, l2_dist, li_dist = atn.train(images, labels, beta=0.99, learning_rate=lr)
             losses.append(loss)
             l2_lst.append(l2_dist)
             li_lst.append(li_dist)
