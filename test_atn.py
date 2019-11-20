@@ -107,7 +107,7 @@ def main():
     net.eval()
 
     # test dataset
-    train_loader, valid_loader = get_train_valid_loader(batch_size=32)
+    train_loader, _ = get_train_valid_loader(batch_size=32)
 
     # train ATN
     atn = ATN(device=config['device'],
@@ -159,7 +159,7 @@ def main():
         
         a = sum(l2_lst) / len(l2_lst)
         b = sum(linf_lst) / len(linf_lst)
-        print('[%5d/%5d] corr:%5d\tcorr_adv:%5d\tavg.l2:%.4f\tavg.linf:%.4f' % (batch_idx, len(test_dataloader), corr, corr_adv, a, b))
+        print('[%5d/%5d] corr:%5d\tcorr_adv:%5d\tavg.l2:%.4f\tavg.linf:%.4f' % (batch_idx, len(train_loader), corr, corr_adv, a, b))
 
 
 
