@@ -56,7 +56,7 @@ def main():
     net.eval()
 
     # test dataset
-    test_dataloader = get_test_dataloader()
+    test_dataloader = get_test_loader(batch_size=8)
 
     # train ATN
     atn = ATN(device=device, weight='./weights/base_atn_conv.pth', beta=0.99, target_classifier=net)

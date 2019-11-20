@@ -61,7 +61,7 @@ def main():
     net.eval()
 
     # test dataset
-    test_dataloader = get_test_loader()
+    test_dataloader = get_test_loader(batch_size=8)
 
     # PGD instance
     if args.pgd_type == 'linf':
