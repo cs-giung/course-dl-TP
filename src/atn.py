@@ -62,14 +62,17 @@ class ATN():
 
         loss = self.beta * loss1 + (1 - self.beta) * loss2
 
-        l2_dist = torch.norm(images - images_adv, p=2).item()
-        li_dist = torch.norm(images - images_adv, p=float('inf')).item()
+        l2s = []
+        lis = []
+        for i in range(images.size(0)):
+            l2s.append(torch.norm(images[i] - images_adv[i], p=2).item())
+            lis.append(torch.norm(images[i] - images_adv[i], p=float('inf')).item())
 
         optimizer.zero_grad()
         loss.backward()
         optimizer.step()
 
-        return loss.item(), l2_dist, li_dist
+        return loss.item(), sum(l2s) / len(l2s), sum(lis) / len(lis)
 
     def perturb(self, images):
         images = images.to(self.device)
