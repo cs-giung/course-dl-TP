@@ -19,6 +19,7 @@ def main():
     parser.add_argument('--atn_epoch', default=10, type=int)
     parser.add_argument('--atn_sample', default=0.1, type=float)
     parser.add_argument('--atn_scratch', default=0, type=int)
+    parser.add_argument('--atn_beta', default=0.99, type=float)
     args = parser.parse_args()
 
     # settings
@@ -29,6 +30,7 @@ def main():
     config['atn_epoch'] = args.atn_epoch
     config['atn_sample'] = args.atn_sample
     config['atn_scratch'] = args.atn_scratch
+    config['atn_beta'] = args.atn_beta
     weight_path = './weights/vgg16_e086_90.62.pth'
 
     # classification model
@@ -59,7 +61,7 @@ def main():
                 break
             # lr = -0.0009 / config['atn_epoch'] * (epoch_idx - 1) + 0.001
             lr = 1e-4
-            loss, l2_dist, li_dist = atn.train(images, labels, beta=0.99, learning_rate=lr)
+            loss, l2_dist, li_dist = atn.train(images, labels, beta=config['atn_beta'], learning_rate=lr)
             losses.append(loss)
             l2_lst.append(l2_dist)
             li_lst.append(li_dist)
