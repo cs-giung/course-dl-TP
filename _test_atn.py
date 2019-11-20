@@ -38,8 +38,8 @@ def main():
     net.eval()
 
     # test dataset
-    # loader, _ = get_train_valid_loader(batch_size=32)
-    loader = get_test_loader(batch_size=32)
+    loader, _ = get_train_valid_loader(batch_size=32)
+    # loader = get_test_loader(batch_size=32)
 
     # train ATN
     if config['atn_scratch']:
