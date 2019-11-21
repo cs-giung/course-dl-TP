@@ -50,6 +50,7 @@ class ATN():
             _, ind_min = labels[idx].min(0)
             print(ind_max.item())
             print(ind_min.item())
+            print(labels[idx])
             labels[idx][ind_max.item()] = alpha * labels[idx][ind_min.item()]
         return labels
 
