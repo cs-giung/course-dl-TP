@@ -158,7 +158,7 @@ def main():
             optimizer = optim.SGD(net.parameters(), lr=learning_rate, momentum=0.9, weight_decay=5e-4)
 
         # train ATN
-        atn_train_loader, _ = get_train_valid_loader(batch_size=config['batch_size'], atn=config['atn_sample']*40000)
+        atn_train_loader, _ = get_train_valid_loader(batch_size=config['batch_size'], atn=int(config['atn_sample']*40000))
         if config['atn_scratch']:
             atn = AAE_ATN(device=config['device'],
                         target_classifier=net)
