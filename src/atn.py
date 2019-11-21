@@ -59,7 +59,7 @@ class ATN():
         outputs_adv = self.target_classifier(images_adv)
         loss2 = -self.loss_fn2(outputs_adv, labels)
 
-        loss = beta * loss1 + (1 - beta) * loss2
+        loss = beta * loss1 + loss2
 
         l2s = []
         lis = []
