@@ -35,6 +35,7 @@ class _atn_conv(nn.Module):
 
 class AAE_ATN():
 
+
     def __init__(self, device, weight=None, target_classifier=None):
 
         self.device = device
@@ -45,7 +46,9 @@ class AAE_ATN():
             state_dict = torch.load(weight, map_location=device)
             self.net.load_state_dict(state_dict)
 
+
     def _reranking(self, soft_labels, alpha):
+
         for idx in range(soft_labels.size(0)):
             _, ind_max = soft_labels[idx].max(0)
             _, ind_min = soft_labels[idx].min(0)
@@ -53,6 +56,7 @@ class AAE_ATN():
         soft_labels_norm = torch.norm(soft_labels, dim=1, keepdim=True)
         soft_labels = soft_labels.div(soft_labels_norm)
         return soft_labels
+
 
     def train(self, images, alpha=0.1, beta=0.7, learning_rate=0.001):
 
@@ -84,6 +88,20 @@ class AAE_ATN():
 
         return loss.item(), sum(l2s) / len(l2s)
 
-    def perturb(self, images):
+
+    def perturb(self, images, threshold=None):
+
+        if threshold is None:
+            return self.net(images).detach()
+
         images = images.to(self.device)
-        return self.net(images).detach()
+        images_adv = self.net(images).detach()
+
+        l2s = []
+        for i in range(images.size(0)):
+            l2s.append(torch.norm(images[i] - images_adv[i], p=2).item())
+
+        if sum(l2s) / len(l2s) > threshold:
+            return images
+        else:
+            return images_adv

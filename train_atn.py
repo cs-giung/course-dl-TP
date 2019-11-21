@@ -9,7 +9,7 @@ import torch.optim as optim
 import torch.backends.cudnn as cudnn
 
 from src import get_train_valid_loader
-from src import VGG, ATN
+from src import VGG, AAE_ATN
 from src import AverageMeter, ProgressMeter, accuracy, write_log
 
 
@@ -37,7 +37,7 @@ def train(train_loader, net, criterion, log_file,
         images = images.to(device=config['device'])
         labels = labels.to(device=config['device'])
 
-        images = ATN.perturb(images)
+        images = ATN.perturb(images, threshold=8)
 
         outputs = net(images)
         loss = criterion(outputs, labels)
@@ -106,8 +106,11 @@ def main():
     parser.add_argument('--batch_size', default=32, type=int)
     parser.add_argument('--lr', default=0.01, type=float)
     parser.add_argument('--lr_decay', default=20, type=int)
-    parser.add_argument('--atn_epoch', default=100, type=int)
+    parser.add_argument('--atn_epoch', default=10, type=int)
     parser.add_argument('--atn_sample', default=0.1, type=float)
+    parser.add_argument('--atn_alpha', default=0.1, type=float)
+    parser.add_argument('--atn_beta', default=0.7, type=float)
+    parser.add_argument('--atn_scratch', default=0, type=int)
     args = parser.parse_args()
 
     config = dict()
@@ -118,6 +121,9 @@ def main():
     config['lr_decay'] = args.lr_decay
     config['atn_epoch'] = args.atn_epoch
     config['atn_sample'] = args.atn_sample
+    config['atn_alpha'] = args.atn_alpha
+    config['atn_beta'] = args.atn_beta
+    config['atn_scratch'] = args.atn_scratch
 
     # CIFAR-10 dataset (40000 + 10000)
     train_loader, valid_loader = get_train_valid_loader(batch_size=config['batch_size'])
@@ -143,16 +149,28 @@ def main():
             optimizer = optim.SGD(net.parameters(), lr=learning_rate, momentum=0.9, weight_decay=5e-4)
 
         # train ATN
-        atn = ATN(device=config['device'], weight='./weights/base_atn_conv.pth', beta=0.99, target_classifier=net)
+        if config['atn_scratch']:
+            atn = AAE_ATN(device=config['device'],
+                        target_classifier=net)
+            lr = 1e-3
+        else:
+            atn = AAE_ATN(device=config['device'],
+                        weight='./weights/base_atn_conv.pth',
+                        target_classifier=net)
+            lr = 1e-4
+
         for epoch_idx_atn in range(1, config['atn_epoch'] + 1):
             losses = []
+            l2_lst = []
             for batch_idx, (images, labels) in enumerate(train_loader):
                 if batch_idx == int(config['atn_sample'] * len(train_loader)):
                     break
-                loss = atn.train(images, labels)
+                loss, l2_dist = atn.train(images, alpha=config['atn_alpha'], beta=config['atn_beta'], learning_rate=lr)
                 losses.append(loss)
-            if epoch_idx_atn % 10 == 0:
-                print('[%3d / %3d] Avg. Loss: %f' % (epoch_idx_atn, config['atn_epoch'], sum(losses) / len(losses)))
+                l2_lst.append(l2_dist)
+            avg_loss = sum(losses) / len(losses)
+            avg_l2 = sum(l2_lst) / len(l2_lst)
+            print('[%3d / %3d] Avg.Loss: %f\tAvg.L2-dist: %f' % (epoch_idx_atn, config['atn_epoch'], avg_loss, avg_l2))
 
         # train & valid
         _ = train(train_loader, net, criterion, log_file, optimizer, epoch_idx, ATN=atn, config=config)

@@ -18,8 +18,8 @@ def main():
     parser.add_argument('--batch_size', default=32, type=int)
     parser.add_argument('--atn_epoch', default=10, type=int)
     parser.add_argument('--atn_sample', default=0.1, type=float)
-    parser.add_argument('--atn_alpha', default=0.5, type=float)
-    parser.add_argument('--atn_beta', default=0.99, type=float)
+    parser.add_argument('--atn_alpha', default=0.1, type=float)
+    parser.add_argument('--atn_beta', default=0.7, type=float)
     parser.add_argument('--atn_scratch', default=0, type=int)
     args = parser.parse_args()
 
