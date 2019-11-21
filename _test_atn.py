@@ -47,10 +47,12 @@ def main():
     if config['atn_scratch']:
         atn = ATN(device=config['device'],
                   target_classifier=net)
+        lr = 1e-3
     else:
         atn = ATN(device=config['device'],
                   weight='./weights/base_atn_conv.pth',
                   target_classifier=net)
+        lr = 1e-4
 
     for epoch_idx in range(1, config['atn_epoch'] + 1):
         loss1s = []
@@ -60,8 +62,6 @@ def main():
         for batch_idx, (images, labels) in enumerate(loader):
             if batch_idx == int(config['atn_sample'] * len(loader)):
                 break
-            # lr = -0.0009 / config['atn_epoch'] * (epoch_idx - 1) + 0.001
-            lr = 1e-4
             loss1, loss2, l2_dist, li_dist = atn.train(images, labels, beta=config['atn_beta'], learning_rate=lr)
             loss1s.append(loss1)
             loss2s.append(loss2)
