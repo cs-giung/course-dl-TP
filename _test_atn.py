@@ -53,7 +53,8 @@ def main():
                   target_classifier=net)
 
     for epoch_idx in range(1, config['atn_epoch'] + 1):
-        losses = []
+        loss1s = []
+        loss2s = []
         l2_lst = []
         li_lst = []
         for batch_idx, (images, labels) in enumerate(loader):
@@ -61,14 +62,16 @@ def main():
                 break
             # lr = -0.0009 / config['atn_epoch'] * (epoch_idx - 1) + 0.001
             lr = 1e-4
-            loss, l2_dist, li_dist = atn.train(images, labels, beta=config['atn_beta'], learning_rate=lr)
-            losses.append(loss)
+            loss1, loss2, l2_dist, li_dist = atn.train(images, labels, beta=config['atn_beta'], learning_rate=lr)
+            loss1s.append(loss1)
+            loss2s.append(loss2)
             l2_lst.append(l2_dist)
             li_lst.append(li_dist)
-        avg_loss = sum(losses) / len(losses)
+        avg_loss1 = sum(loss1s) / len(loss1s)
+        avg_loss2 = sum(loss2s) / len(loss2s)
         avg_l2 = sum(l2_lst) / len(l2_lst)
         avg_li = sum(li_lst) / len(li_lst)
-        print('[%3d / %3d] Avg.Loss: %f\tAvg.L2-dist: %f\tAvg.Linf-dist:%f' % (epoch_idx, config['atn_epoch'], avg_loss, avg_l2, avg_li))
+        print('[%3d / %3d] Avg.Loss: %f, %f\tAvg.L2-dist: %f\tAvg.Linf-dist:%f' % (epoch_idx, config['atn_epoch'], avg_loss1, avg_loss2, avg_l2, avg_li))
 
     # ATN examples
     corr = 0

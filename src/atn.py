@@ -71,7 +71,7 @@ class ATN():
         loss.backward()
         optimizer.step()
 
-        return loss.item(), sum(l2s) / len(l2s), sum(lis) / len(lis)
+        return loss1.item(), loss2.item(), sum(l2s) / len(l2s), sum(lis) / len(lis)
 
     def perturb(self, images):
         images = images.to(self.device)
