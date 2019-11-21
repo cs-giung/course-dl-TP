@@ -65,7 +65,7 @@ class AAE_ATN():
 
         images = images.to(self.device)
         images_adv = self.net(images)
-        loss1 = criterion(images_adv, images)
+        lossX = criterion(images_adv, images)
 
         outputs = self.target_classifier(images)
         outputs_adv = self.target_classifier(images_adv)
@@ -74,9 +74,9 @@ class AAE_ATN():
         soft_labels_adv = F.softmax(outputs_adv, dim=1)
 
         soft_labels_reranked = self._reranking(soft_labels, alpha).detach()
-        loss2 = criterion(soft_labels_adv, soft_labels_reranked)
+        lossY = criterion(soft_labels_adv, soft_labels_reranked)
 
-        loss = beta * loss1 + (1 - beta) * loss2
+        loss = beta * lossX + (1 - beta) * lossY
 
         optimizer.zero_grad()
         loss.backward()
@@ -86,7 +86,7 @@ class AAE_ATN():
         for i in range(images.size(0)):
             l2s.append(torch.norm(images[i] - images_adv[i], p=2).item())
 
-        return loss.item(), sum(l2s) / len(l2s)
+        return loss.item(), lossX.item(), lossY.item(), sum(l2s) / len(l2s)
 
 
     def perturb(self, images, threshold=None):

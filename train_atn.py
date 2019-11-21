@@ -166,16 +166,22 @@ def main():
 
         for epoch_idx_atn in range(1, config['atn_epoch'] + 1):
             losses = []
+            lossXs = []
+            lossYs = []
             l2_lst = []
             for batch_idx, (images, labels) in enumerate(train_loader):
                 if batch_idx == int(config['atn_sample'] * len(train_loader)):
                     break
-                loss, l2_dist = atn.train(images, alpha=config['atn_alpha'], beta=config['atn_beta'], learning_rate=lr)
+                loss,  lossX, lossY, l2_dist = atn.train(images, alpha=config['atn_alpha'], beta=config['atn_beta'], learning_rate=lr)
                 losses.append(loss)
+                lossXs.append(lossX)
+                lossYs.append(lossY)
                 l2_lst.append(l2_dist)
             avg_loss = sum(losses) / len(losses)
+            avg_lossX = sum(lossXs) / len(lossXs)
+            avg_lossY = sum(lossYs) / len(lossYs)
             avg_l2 = sum(l2_lst) / len(l2_lst)
-            print('[%3d / %3d] Avg.Loss: %f\tAvg.L2-dist: %f' % (epoch_idx_atn, config['atn_epoch'], avg_loss, avg_l2))
+            print('[%3d / %3d] Avg.Loss: %.4f(%.4f, %.4f)\tAvg.L2-dist: %.4f' % (epoch_idx_atn, config['atn_epoch'], avg_loss, avg_lossX, avg_lossY, avg_l2))
 
         # train & valid
         _ = train(train_loader, net, criterion, log_file, optimizer, epoch_idx, ATN=atn, config=config)
