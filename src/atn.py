@@ -50,7 +50,7 @@ class ATN():
             _, ind_max = soft_labels[idx].max(0)
             _, ind_min = soft_labels[idx].min(0)
             soft_labels[idx][ind_max.item()] = alpha * soft_labels[idx][ind_min.item()]
-            norm = torch.norm(soft_labels[idx], p=2).detach()
+            norm = torch.norm(soft_labels[idx], p=2)
             soft_labels[idx] = soft_labels[idx].div(norm.expand_as(soft_labels[idx]))
         return soft_labels
 
