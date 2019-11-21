@@ -7,7 +7,7 @@ import torch.optim as optim
 import torch.nn.functional as F
 
 from src import get_test_loader, get_train_valid_loader
-from src import VGG, ATN
+from src import VGG, AAE_ATN
 
 
 def main():
@@ -47,33 +47,27 @@ def main():
 
     # train ATN
     if config['atn_scratch']:
-        atn = ATN(device=config['device'],
-                  target_classifier=net)
+        atn = AAE_ATN(device=config['device'],
+                      target_classifier=net)
         lr = 1e-3
     else:
-        atn = ATN(device=config['device'],
-                  weight='./weights/base_atn_conv.pth',
-                  target_classifier=net)
+        atn = AAE_ATN(device=config['device'],
+                      weight='./weights/base_atn_conv.pth',
+                      target_classifier=net)
         lr = 1e-4
 
     for epoch_idx in range(1, config['atn_epoch'] + 1):
-        loss1s = []
-        loss2s = []
+        losses = []
         l2_lst = []
-        li_lst = []
         for batch_idx, (images, labels) in enumerate(loader):
             if batch_idx == int(config['atn_sample'] * len(loader)):
                 break
-            loss1, loss2, l2_dist, li_dist = atn.train(images, labels, beta=config['atn_beta'], learning_rate=lr)
-            loss1s.append(loss1)
-            loss2s.append(loss2)
+            loss, l2_dist = atn.train(images, labels, beta=config['atn_beta'], learning_rate=lr)
+            losses.append(loss)
             l2_lst.append(l2_dist)
-            li_lst.append(li_dist)
-        avg_loss1 = sum(loss1s) / len(loss1s)
-        avg_loss2 = sum(loss2s) / len(loss2s)
+        avg_loss = sum(losses) / len(losses)
         avg_l2 = sum(l2_lst) / len(l2_lst)
-        avg_li = sum(li_lst) / len(li_lst)
-        print('[%3d / %3d] Avg.Loss: %f, %f\tAvg.L2-dist: %f\tAvg.Linf-dist:%f' % (epoch_idx, config['atn_epoch'], avg_loss1, avg_loss2, avg_l2, avg_li))
+        print('[%3d / %3d] Avg.Loss: %f\tAvg.L2-dist: %f' % (epoch_idx, config['atn_epoch'], avg_loss, avg_l2))
 
     # ATN examples
     corr = 0
