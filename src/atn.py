@@ -44,16 +44,12 @@ class ATN():
             state_dict = torch.load(weight, map_location=device)
             self.net.load_state_dict(state_dict)
 
-    def _reranking(self, labels, alpha=0.5):
-        print(labels)
-        for idx in range(labels.size(0)):
-            _, ind_max = labels[idx].max(0)
-            _, ind_min = labels[idx].min(0)
-            print(ind_max.item())
-            print(ind_min.item())
-            print(labels[idx])
-            labels[idx][ind_max.item()] = alpha * labels[idx][ind_min.item()]
-        return labels
+    def _reranking(self, soft_labels, alpha=0.5):
+        for idx in range(soft_labels.size(0)):
+            _, ind_max = soft_labels[idx].max(0)
+            _, ind_min = soft_labels[idx].min(0)
+            soft_labels[idx][ind_max.item()] = alpha * soft_labels[idx][ind_min.item()]
+        return soft_labels
 
     def train(self, images, labels, beta=0.99, learning_rate=0.001):
 
@@ -66,8 +62,9 @@ class ATN():
         images_adv = self.net(images)
         loss1 = criterion(images_adv, images)
 
-        outputs_adv = self.target_classifier(images_adv)
-        loss2 = criterion(outputs_adv, self._reranking(outputs_adv))
+        soft_label = self.target_classifier(images)
+        soft_label_adv = self.target_classifier(images_adv)
+        loss2 = criterion(soft_label_adv, self._reranking(soft_label))
 
         loss = beta * loss1 + (1 - beta) * loss2
 
