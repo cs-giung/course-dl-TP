@@ -51,7 +51,7 @@ class ATN():
             _, ind_min = soft_labels[idx].min(0)
             soft_labels[idx][ind_max.item()] = alpha * soft_labels[idx][ind_min.item()]
         soft_labels_norm = torch.norm(soft_labels, dim=1, keepdim=True)
-        soft_labels = soft_labels / soft_labels_norm
+        soft_labels = torch.div(soft_labels, soft_labels_norm)
         return soft_labels
 
     def train(self, images, labels, beta=0.99, learning_rate=0.001):
@@ -60,13 +60,14 @@ class ATN():
         optimizer = optim.Adam(self.net.parameters(), lr=learning_rate)
 
         images = images.to(self.device)
-        labels = labels.to(self.device)
-
         images_adv = self.net(images)
         loss1 = criterion(images_adv, images)
 
-        soft_label = F.softmax(self.target_classifier(images), dim=1)
-        soft_label_adv = F.softmax(self.target_classifier(images_adv), dim=1)
+        outputs = self.target_classifier(images)
+        outputs_adv = self.target_classifier(images_adv)
+
+        soft_label = F.softmax(outputs, dim=1)
+        soft_label_adv = F.softmax(outputs_adv, dim=1)
         loss2 = criterion(soft_label_adv, self._reranking(soft_label, alpha=1))
 
         loss = beta * loss1 + (1 - beta) * loss2
