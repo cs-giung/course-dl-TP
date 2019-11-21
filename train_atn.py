@@ -40,7 +40,7 @@ def train(train_loader, net, criterion, log_file,
         images = images.to(device=config['device'])
         labels = labels.to(device=config['device'])
 
-        images, is_atn = ATN.perturb(images, threshold=8)
+        images, is_atn = ATN.perturb(images, threshold=config['atn_threshold'])
         if is_atn:
             atn_cnt += 1
 
@@ -118,6 +118,7 @@ def main():
     parser.add_argument('--atn_alpha', default=0.1, type=float)
     parser.add_argument('--atn_beta', default=0.7, type=float)
     parser.add_argument('--atn_scratch', default=0, type=int)
+    parser.add_argument('--atn_threshold', default=8, type=int)
     parser.add_argument('--atn_debug', default=0, type=int)
     args = parser.parse_args()
 
@@ -132,6 +133,7 @@ def main():
     config['atn_alpha'] = args.atn_alpha
     config['atn_beta'] = args.atn_beta
     config['atn_scratch'] = args.atn_scratch
+    config['atn_threshold'] = args.atn_threshold
     config['atn_debug'] = args.atn_debug
 
     # CIFAR-10 dataset (40000 + 10000)
