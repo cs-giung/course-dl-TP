@@ -1,3 +1,4 @@
+import random
 import torch
 import torchvision.datasets as datasets
 import torchvision.transforms as transforms
@@ -24,10 +25,13 @@ def get_test_loader(batch_size):
     return test_dataloader
 
 
-def get_train_valid_loader(batch_size=32):
+def get_train_valid_loader(batch_size=32, atn=0):
 
     indices = list(range(50000))
-    train_sampler = torch.utils.data.SubsetRandomSampler(indices[:40000])
+    if atn:
+        train_sampler = torch.utils.data.SubsetRandomSampler(random.sample(indices[:40000], atn))
+    else:
+        train_sampler = torch.utils.data.SubsetRandomSampler(indices[:40000])
     valid_sampler = torch.utils.data.SubsetRandomSampler(indices[40000:])
 
     train_transform = transforms.Compose([

@@ -158,6 +158,7 @@ def main():
             optimizer = optim.SGD(net.parameters(), lr=learning_rate, momentum=0.9, weight_decay=5e-4)
 
         # train ATN
+        atn_train_loader, _ = get_train_valid_loader(batch_size=config['batch_size'], atn=config['atn_sample']*40000)
         if config['atn_scratch']:
             atn = AAE_ATN(device=config['device'],
                         target_classifier=net)
@@ -173,9 +174,7 @@ def main():
             lossXs = []
             lossYs = []
             l2_lst = []
-            for batch_idx, (images, labels) in enumerate(train_loader):
-                if batch_idx == int(config['atn_sample'] * len(train_loader)):
-                    break
+            for batch_idx, (images, labels) in enumerate(atn_train_loader):
                 loss,  lossX, lossY, l2_dist = atn.train(images, alpha=config['atn_alpha'], beta=config['atn_beta'], learning_rate=lr)
                 losses.append(loss)
                 lossXs.append(lossX)
