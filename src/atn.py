@@ -45,6 +45,7 @@ class ATN():
             self.net.load_state_dict(state_dict)
 
     def _reranking(self, labels, alpha=0.5):
+        print(labels)
         for idx in range(labels.size(0)):
             _, ind_max = labels[idx].max(0)
             _, ind_min = labels[idx].min(0)
