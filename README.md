@@ -14,7 +14,7 @@ Adversasrial examples can be generated via neural networks, and these special ne
 
 ## Notes on ATN
 
-### Types of ATN
+#### Types of ATN
 
 Intuitively, we can think of two main types of ATN. Only AAE-ATN will be studied in this repository.
 
@@ -24,7 +24,7 @@ Intuitively, we can think of two main types of ATN. Only AAE-ATN will be studied
 * **Adversarial Auto-Encoding ATN (AAE-ATN)** <br>
   AAE-ATNs are similar to standard autoencoders in that they attempt to accurately reconstruct the original image. However, there is a difference in that the reconstructed image acts as adversarial example for the target classifier.
 
-### Defining Loss for ATN
+#### Defining Loss for ATN
 
 In general, ATN can be trained with weighted sum of two losses:
 
