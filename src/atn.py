@@ -59,7 +59,7 @@ class ATN():
         outputs_adv = self.target_classifier(images_adv)
         loss2 = -self.loss_fn2(outputs_adv, labels)
 
-        loss =  torch.exp(beta*(loss1 - 0.06)) + loss2
+        loss =  torch.exp(beta*(loss1 - 0.006)) + loss2
 
         l2s = []
         lis = []
