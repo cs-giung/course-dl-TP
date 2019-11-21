@@ -70,8 +70,6 @@ class ATN():
         soft_labels_adv = F.softmax(outputs_adv, dim=1)
 
         soft_labels_reranked = self._reranking(soft_labels, alpha=1).detach()
-        print(soft_labels)
-        print(soft_labels_reranked)
         loss2 = criterion(soft_labels_adv, soft_labels_reranked)
 
         loss = beta * loss1 + (1 - beta) * loss2
