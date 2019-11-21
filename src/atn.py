@@ -67,7 +67,7 @@ class ATN():
         loss1 = criterion(images_adv, images)
 
         outputs_adv = self.target_classifier(images_adv)
-        loss2 = criterion(outputs_adv, self._reranking(labels))
+        loss2 = criterion(outputs_adv, self._reranking(outputs_adv))
 
         loss = beta * loss1 + (1 - beta) * loss2
 
