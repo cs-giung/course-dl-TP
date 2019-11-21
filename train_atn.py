@@ -32,12 +32,15 @@ def train(train_loader, net, criterion, log_file,
     )
 
     end = time.time()
+    atn_cnt = 0
     for batch_idx, (images, labels) in enumerate(train_loader, start=1):
 
         images = images.to(device=config['device'])
         labels = labels.to(device=config['device'])
 
-        images = ATN.perturb(images, threshold=8)
+        images, is_atn = ATN.perturb(images, threshold=8)
+        if is_atn:
+            atn_cnt += 1
 
         outputs = net(images)
         loss = criterion(outputs, labels)
@@ -57,6 +60,8 @@ def train(train_loader, net, criterion, log_file,
         if batch_idx == 1 or batch_idx % 400 == 0:
             progress.display(batch_idx)
             write_log(log_file, progress.log_str(batch_idx))
+
+    print(atn_cnt)
 
     return top1.avg
 

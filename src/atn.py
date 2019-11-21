@@ -102,6 +102,6 @@ class AAE_ATN():
             l2s.append(torch.norm(images[i] - images_adv[i], p=2).item())
 
         if sum(l2s) / len(l2s) > threshold:
-            return images
+            return images, False
         else:
-            return images_adv
+            return images_adv, True
