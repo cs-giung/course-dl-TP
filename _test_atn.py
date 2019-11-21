@@ -18,9 +18,9 @@ def main():
     parser.add_argument('--batch_size', default=32, type=int)
     parser.add_argument('--atn_epoch', default=10, type=int)
     parser.add_argument('--atn_sample', default=0.1, type=float)
-    parser.add_argument('--atn_scratch', default=0, type=int)
     parser.add_argument('--atn_alpha', default=0.5, type=float)
     parser.add_argument('--atn_beta', default=0.99, type=float)
+    parser.add_argument('--atn_scratch', default=0, type=int)
     args = parser.parse_args()
 
     # settings
@@ -30,9 +30,9 @@ def main():
     config['batch_size'] = args.batch_size
     config['atn_epoch'] = args.atn_epoch
     config['atn_sample'] = args.atn_sample
-    config['atn_scratch'] = args.atn_scratch
     config['atn_alpha'] = args.atn_alpha
     config['atn_beta'] = args.atn_beta
+    config['atn_scratch'] = args.atn_scratch
     weight_path = './weights/vgg16_e086_90.62.pth'
 
     # classification model
@@ -43,7 +43,6 @@ def main():
 
     # test dataset
     loader, _ = get_train_valid_loader(batch_size=32)
-    # loader = get_test_loader(batch_size=32)
 
     # train ATN
     if config['atn_scratch']:
