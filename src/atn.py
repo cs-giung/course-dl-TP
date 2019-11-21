@@ -1,3 +1,4 @@
+import numpy as np
 import torch
 import torch.nn as nn
 import torch.optim as optim
@@ -43,23 +44,28 @@ class ATN():
             state_dict = torch.load(weight, map_location=device)
             self.net.load_state_dict(state_dict)
 
-        self.loss_fn1 = nn.MSELoss()
-        self.loss_fn2 = nn.CrossEntropyLoss()
+    def _reranking(self, labels, alpha=0.5):
+        for idx in range(labels.size(0)):
+            val_max, ind_max = labels[idx].max(0)
+            val_min, ind_min = labels[idx].min(0)
+            labels[idx][ind_max] = alpha * val_min
+        return labels
 
     def train(self, images, labels, beta=0.99, learning_rate=0.001):
 
+        criterion = nn.MSELoss()
         optimizer = optim.Adam(self.net.parameters(), lr=learning_rate)
 
         images = images.to(self.device)
         labels = labels.to(self.device)
 
         images_adv = self.net(images)
-        loss1 = self.loss_fn1(images_adv, images)
+        loss1 = criterion(images_adv, images)
 
         outputs_adv = self.target_classifier(images_adv)
-        loss2 = -self.loss_fn2(outputs_adv, labels)
+        loss2 = criterion(outputs_adv, self._reranking(labels))
 
-        loss =  torch.exp(beta*(loss1 - 0.006)) + loss2
+        loss = beta * loss1 + (1 - beta) * loss2
 
         l2s = []
         lis = []
