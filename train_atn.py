@@ -1,10 +1,12 @@
 import os
 import time
 import argparse
+import numpy as np
 from datetime import datetime
 
 import torch
 import torch.nn as nn
+import torch.nn.functional as F
 import torch.optim as optim
 import torch.backends.cudnn as cudnn
 
@@ -116,6 +118,7 @@ def main():
     parser.add_argument('--atn_alpha', default=0.1, type=float)
     parser.add_argument('--atn_beta', default=0.7, type=float)
     parser.add_argument('--atn_scratch', default=0, type=int)
+    parser.add_argument('--atn_debug', default=0, type=int)
     args = parser.parse_args()
 
     config = dict()
@@ -129,6 +132,7 @@ def main():
     config['atn_alpha'] = args.atn_alpha
     config['atn_beta'] = args.atn_beta
     config['atn_scratch'] = args.atn_scratch
+    config['atn_debug'] = args.atn_debug
 
     # CIFAR-10 dataset (40000 + 10000)
     train_loader, valid_loader = get_train_valid_loader(batch_size=config['batch_size'])
@@ -182,6 +186,45 @@ def main():
             avg_lossY = sum(lossYs) / len(lossYs)
             avg_l2 = sum(l2_lst) / len(l2_lst)
             print('[%3d / %3d] Avg.Loss: %.4f(%.4f, %.4f)\tAvg.L2-dist: %.4f' % (epoch_idx_atn, config['atn_epoch'], avg_loss, avg_lossX, avg_lossY, avg_l2))
+
+            # DEBUG
+            if config['atn_debug']:
+                corr = 0
+                corr_adv = 0
+                l2_lst = []
+                linf_lst = []
+                for batch_idx, (images, labels) in enumerate(valid_loader, start=1):
+
+                    images = images.to(config['device'])
+                    images_adv = atn.perturb(images)
+
+                    outputs = net(images)
+                    outputs_adv = net(images_adv)
+
+                    for image, image_adv, output, output_adv, label in zip(images, images_adv, outputs, outputs_adv, labels):
+
+                        soft_label = F.softmax(output, dim=0).cpu().detach().numpy()
+                        soft_label_adv = F.softmax(output_adv, dim=0).cpu().detach().numpy()
+
+                        label = label.item()
+                        pred = np.argmax(soft_label)
+                        pred_adv = np.argmax(soft_label_adv)
+
+                        if label == pred:
+                            corr += 1
+
+                        if label == pred_adv:
+                            corr_adv += 1
+
+                        l2_dist = torch.norm(image - image_adv, 2).item()
+                        linf_dist = torch.norm(image - image_adv, float('inf')).item()
+
+                        l2_lst.append(l2_dist)
+                        linf_lst.append(linf_dist)
+
+                a = sum(l2_lst) / len(l2_lst)
+                b = sum(linf_lst) / len(linf_lst)
+                print('[%5d/%5d] corr:%5d\tcorr_adv:%5d\tavg.l2:%.4f\tavg.linf:%.4f' % (batch_idx, len(loader), corr, corr_adv, a, b))
 
         # train & valid
         _ = train(train_loader, net, criterion, log_file, optimizer, epoch_idx, ATN=atn, config=config)

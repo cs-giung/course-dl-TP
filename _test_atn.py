@@ -107,7 +107,7 @@ def main():
 
             l2_lst.append(l2_dist)
             linf_lst.append(linf_dist)
-        
+
     a = sum(l2_lst) / len(l2_lst)
     b = sum(linf_lst) / len(linf_lst)
     print('[%5d/%5d] corr:%5d\tcorr_adv:%5d\tavg.l2:%.4f\tavg.linf:%.4f' % (batch_idx, len(loader), corr, corr_adv, a, b))
