@@ -61,7 +61,7 @@ def main():
         for batch_idx, (images, labels) in enumerate(loader):
             if batch_idx == int(config['atn_sample'] * len(loader)):
                 break
-            loss, l2_dist = atn.train(images, labels, alpha=config['atn_alpha'], beta=config['atn_beta'], learning_rate=lr)
+            loss, l2_dist = atn.train(images, alpha=config['atn_alpha'], beta=config['atn_beta'], learning_rate=lr)
             losses.append(loss)
             l2_lst.append(l2_dist)
         avg_loss = sum(losses) / len(losses)
