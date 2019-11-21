@@ -19,6 +19,7 @@ def main():
     parser.add_argument('--atn_epoch', default=10, type=int)
     parser.add_argument('--atn_sample', default=0.1, type=float)
     parser.add_argument('--atn_scratch', default=0, type=int)
+    parser.add_argument('--atn_alpha', default=0.5, type=float)
     parser.add_argument('--atn_beta', default=0.99, type=float)
     args = parser.parse_args()
 
@@ -30,6 +31,7 @@ def main():
     config['atn_epoch'] = args.atn_epoch
     config['atn_sample'] = args.atn_sample
     config['atn_scratch'] = args.atn_scratch
+    config['atn_alpha'] = args.atn_alpha
     config['atn_beta'] = args.atn_beta
     weight_path = './weights/vgg16_e086_90.62.pth'
 

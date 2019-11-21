@@ -54,7 +54,7 @@ class ATN():
         soft_labels = soft_labels.div(soft_labels_norm)
         return soft_labels
 
-    def train(self, images, labels, beta=0.99, learning_rate=0.001):
+    def train(self, images, labels, alpha=0.5, beta=0.99, learning_rate=0.001):
 
         criterion = nn.MSELoss()
         optimizer = optim.Adam(self.net.parameters(), lr=learning_rate)
@@ -69,7 +69,7 @@ class ATN():
         soft_labels = F.softmax(outputs, dim=1)
         soft_labels_adv = F.softmax(outputs_adv, dim=1)
 
-        soft_labels_reranked = self._reranking(soft_labels, alpha=1).detach()
+        soft_labels_reranked = self._reranking(soft_labels, alpha).detach()
         loss2 = criterion(soft_labels_adv, soft_labels_reranked)
 
         loss = beta * loss1 + (1 - beta) * loss2
