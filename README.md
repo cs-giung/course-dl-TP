@@ -2,11 +2,21 @@
 
 ## Overview
 
-Adversasrial examples can be generated via neural networks, and these special networks are called Adversarial Transformation Network. This repository verifies that ATN can be useful for adversarial training. The references for ATN and PGD are as follows:
+#### Adversarial Transformation Network
+
+Adversasrial examples can be generated via neural networks, and these special networks are called **Adversarial Transformation Network (ATN)**. It is presented in the following paper:
 
 * **Adversarial Transformation Networks: Learning to Generate Adversarial Examples** <br>
   *Shumeeet Baluja, Ian Fischer* <br>
   https://arxiv.org/abs/1703.09387
+
+The authors of the paper argue that ATN is useful for adversarial training:
+
+> It appears that ATNs could be used in their adversarial training architecture, and could provide substantially more diversity to the trained model than current adversaries. This adversarial diversity improve model test-set generalization and adversarial robustness.
+
+> Because ATNs are quick to train relative to the target network (in the case of IR2, hours instead of weeks), reliably produce diverse adversarial examples, (...) In this manner, throughout training, the target network would be exposed to a shifting set of diverse adversaries from ATNs that can be trained in a fully-automated manner.
+
+This repository verifies that ATN can be useful for adversarial training. For comparison, PGD-based adversarial training is also implemented, which is referred to the following paper:
 
 * **Towards Deep Learning Models Resistant to Adversarial Attacks** <br>
   *Aleksander Madry, Aleksandar Makelov, Ludwig Schmidt, Dimitris Tsipras, Adrian Vladu* <br>
