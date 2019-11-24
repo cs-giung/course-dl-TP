@@ -33,7 +33,7 @@ In addition, if you would like to know almost all about the adversarial example,
 
 #### Types of ATN
 
-Intuitively, we can think of two main types of ATN. Only AAE-ATN will be studied in this repository.
+Intuitively, we can think of two main types of ATN.
 
 * **Perturbation ATN (P-ATN)** <br>
   It is the type of ATN that generates small, but effective perturbations that acts as a filter on the image. The image combined with the generated perturbations acts as adversarial exmaple for the target classifier.

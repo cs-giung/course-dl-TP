@@ -33,6 +33,33 @@ class _atn_conv(nn.Module):
         return out
 
 
+class _atn_net(nn.Module):
+
+    def __init__(self):
+        super(_atn_net, self).__init__()
+        self.layers = nn.Sequential(
+            nn.Conv2d(3, 32, 3, stride=1, padding=1),
+            nn.ReLU(),
+            nn.BatchNorm2d(32),
+            nn.Conv2d(32, 32, 3, stride=2, padding=1),
+            nn.ReLU(),
+            nn.Conv2d(32, 32, 3, stride=1, padding=1),
+            nn.ReLU(),
+            nn.BatchNorm2d(32),
+            nn.UpsamplingNearest2d(scale_factor=2),
+            nn.Conv2d(32, 32, 3, stride=1, padding=1),
+            nn.ReLU(),
+            nn.BatchNorm2d(32),
+            nn.Conv2d(32, 3, 1, stride=1, padding=0),
+            nn.Tanh(),
+        )
+
+    def forward(self, x):
+        x = self.layers(x)
+        out = 2 * x
+        return out
+
+
 class AAE_ATN():
 
 
