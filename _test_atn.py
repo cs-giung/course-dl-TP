@@ -14,8 +14,7 @@ def main():
 
     parser = argparse.ArgumentParser()
     parser.add_argument('--device', default='cuda', type=str)
-    parser.add_argument('--epochs', default=100, type=int)
-    parser.add_argument('--batch_size', default=32, type=int)
+    parser.add_argument('--atn_batch_size', default=32, type=int)
     parser.add_argument('--atn_epoch', default=10, type=int)
     parser.add_argument('--atn_sample', default=0.1, type=float)
     parser.add_argument('--atn_weight', default=None, type=str)
@@ -25,8 +24,7 @@ def main():
     # settings
     config = dict()
     config['device'] = args.device
-    config['num_epoch'] = args.epochs
-    config['batch_size'] = args.batch_size
+    config['atn_batch_size'] = args.atn_batch_size
     config['atn_epoch'] = args.atn_epoch
     config['atn_sample'] = args.atn_sample
     config['atn_weight'] = args.atn_weight
@@ -40,7 +38,7 @@ def main():
     net.eval()
 
     # train dataloader for testing
-    atn_train_loader, _ = get_train_valid_loader(batch_size=32, atn=int(config['atn_sample'] * 40000))
+    atn_train_loader, _ = get_train_valid_loader(batch_size=config['atn_batch_size'], atn=int(config['atn_sample'] * 40000))
 
     # train ATN (from scratch or not)
     atn = P_ATN(model=net,
