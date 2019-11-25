@@ -70,6 +70,19 @@ python demo_atn.py --device cpu
 
 The PGD on left side works by calculating the gradients for a given classification network (we assume a white-box in this situation), and it can almost always produce valid results for typical images without pre-requirements. However, in the case of ATN on right side, note that it is only possible to produce valid results after a proper learning has been achieved (this is not satisfactory in this demonstration, and the cat image is just a specially easy case).
 
+## Result #1: Performance of P-ATN
+
+| eps | _conv_fc      | _base_deconv |
+| :-: |  -:           | -:           |
+| 2   | 39689 / 40000 |
+| 4   | 35897 / 40000 |
+| 6   | 25812 / 40000 |
+| 8   | 17360 / 40000 |
+| 10  | 10211 / 40000 |
+| 12  |  8774 / 40000 |
+| 14  |  8236 / 40000 |
+| 16  |  4571 / 40000 |
+
 ## Result: Adversarial Training
 
 ### Standard Training
