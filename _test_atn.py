@@ -17,7 +17,7 @@ def main():
     parser.add_argument('--atn_batch_size', default=32, type=int)
     parser.add_argument('--atn_epoch', default=10, type=int)
     parser.add_argument('--atn_sample', default=0.1, type=float)
-    parser.add_argumetn('--atn_epsilon', default=8, type=int)
+    parser.add_argument('--atn_epsilon', default=8, type=int)
     parser.add_argument('--atn_weight', default=None, type=str)
     parser.add_argument('--atn_lr', default=1e-3, type=float)
     args = parser.parse_args()
