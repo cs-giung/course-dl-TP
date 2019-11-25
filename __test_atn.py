@@ -39,6 +39,7 @@ def main():
 
     # train dataloader for testing
     atn_train_loader, _ = get_train_valid_loader(batch_size=config['atn_batch_size'], atn=int(config['atn_sample'] * 40000))
+    train_loader, _ = get_train_valid_loader(batch_size=config['atn_batch_size'])
 
     # train ATN (from scratch or not)
     eps_list = [2, 4, 6, 8, 10, 12, 14, 16]
@@ -71,7 +72,7 @@ def main():
         corr_adv = 0
         l2_lst = []
         linf_lst = []
-        for batch_idx, (images, labels) in enumerate(atn_train_loader, start=1):
+        for batch_idx, (images, labels) in enumerate(train_loader, start=1):
 
             images = images.to(config['device'])
             images_adv = atn.perturb(images)
@@ -102,7 +103,7 @@ def main():
 
         a = sum(l2_lst) / len(l2_lst)
         b = sum(linf_lst) / len(linf_lst)
-        print('[%5d/%5d] corr:%5d\tcorr_adv:%5d\tavg.l2:%.4f\tavg.linf:%.4f' % (batch_idx, len(atn_train_loader), corr, corr_adv, a, b))
+        print('[%5d/%5d] corr:%5d\tcorr_adv:%5d\tavg.l2:%.4f\tavg.linf:%.4f' % (batch_idx, len(train_loader), corr, corr_adv, a, b))
         print()
 
 
