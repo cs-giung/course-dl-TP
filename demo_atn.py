@@ -4,12 +4,11 @@ import matplotlib.pyplot as plt
 from PIL import Image
 
 import torch
-import torch.nn as nn
-import torch.optim as optim
 import torch.nn.functional as F
 
-from src import get_test_loader, IND2CLASS
-from src import VGG, ATN
+from src import VGG, get_test_loader
+from src import IND2CLASS
+from src_attacks import P_ATN
 
 
 def recover_image(image):
@@ -59,7 +58,7 @@ def main():
     test_dataloader = get_test_loader(batch_size=8)
 
     # train ATN
-    atn = ATN(device=device, weight='./weights/base_atn_conv.pth', beta=0.99, target_classifier=net)
+    atn = P_ATN(model=net, epsilon=8*4/255, weight=None, device=device)
     for epoch_idx in range(1):
         print(epoch_idx)
         for batch_idx, (images, labels) in enumerate(test_dataloader):

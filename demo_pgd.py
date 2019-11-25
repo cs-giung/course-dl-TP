@@ -12,8 +12,9 @@ from PIL import Image
 import torch
 import torch.nn.functional as F
 
-from src import get_test_loader, IND2CLASS
-from src import VGG, PGD_Linf, PGD_L2
+from src import VGG, get_test_loader
+from src import IND2CLASS
+from src_attacks import PGD_Linf, PGD_L2
 
 
 def recover_image(image):

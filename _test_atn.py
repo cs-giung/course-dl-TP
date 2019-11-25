@@ -47,12 +47,11 @@ def main():
     # train ATN
     if config['atn_scratch']:
         atn_weight = None
-        atn = P_ATN(model=net, epsilon=8*4/255, weight=atn_weight, device=config['device'])
         lr = 1e-3
     else:
         atn_weight = None
-        atn = P_ATN(model=net, epsilon=8*4/255, weight=atn_weight, device=config['device'])
         lr = 1e-4
+    atn = P_ATN(model=net, epsilon=8*4/255, weight=atn_weight, device=config['device'])
 
     for epoch_idx in range(1, config['atn_epoch'] + 1):
         losses = []
