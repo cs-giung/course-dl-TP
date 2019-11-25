@@ -7,7 +7,7 @@ import torch.optim as optim
 import torch.nn.functional as F
 
 from src import get_test_loader, get_train_valid_loader
-from src import VGG, AAE_ATN
+from src import VGG, P_ATN
 
 
 def main():
@@ -46,13 +46,12 @@ def main():
 
     # train ATN
     if config['atn_scratch']:
-        atn = AAE_ATN(device=config['device'],
-                      target_classifier=net)
+        atn_weight = None
+        atn = P_ATN(model=net, epsilon=8*4/255, weight=atn_weight, device=config['device'])
         lr = 1e-3
     else:
-        atn = AAE_ATN(device=config['device'],
-                      weight='./weights/base_atn_conv.pth',
-                      target_classifier=net)
+        atn_weight = None
+        atn = P_ATN(model=net, epsilon=8*4/255, weight=atn_weight, device=config['device'])
         lr = 1e-4
 
     for epoch_idx in range(1, config['atn_epoch'] + 1):
@@ -63,7 +62,7 @@ def main():
         for batch_idx, (images, labels) in enumerate(loader):
             if batch_idx == int(config['atn_sample'] * len(loader)):
                 break
-            loss, lossX, lossY, l2_dist = atn.train(images, alpha=config['atn_alpha'], beta=config['atn_beta'], learning_rate=lr)
+            loss, lossX, lossY, l2_dist = atn.train(images, labels, learning_rate=lr)
             losses.append(loss)
             lossXs.append(lossX)
             lossYs.append(lossY)
