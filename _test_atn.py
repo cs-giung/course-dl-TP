@@ -6,8 +6,8 @@ import torch.nn as nn
 import torch.optim as optim
 import torch.nn.functional as F
 
-from src import get_test_loader, get_train_valid_loader
-from src import VGG, P_ATN
+from src import VGG, get_train_valid_loader
+from src_attacks import P_ATN
 
 
 def main():
@@ -18,9 +18,8 @@ def main():
     parser.add_argument('--batch_size', default=32, type=int)
     parser.add_argument('--atn_epoch', default=10, type=int)
     parser.add_argument('--atn_sample', default=0.1, type=float)
-    parser.add_argument('--atn_alpha', default=0.1, type=float)
-    parser.add_argument('--atn_beta', default=0.7, type=float)
-    parser.add_argument('--atn_scratch', default=0, type=int)
+    parser.add_argument('--atn_weight', default=None, type=str)
+    parser.add_argument('--atn_lr', default=1e-3, type=float)
     args = parser.parse_args()
 
     # settings
@@ -30,9 +29,8 @@ def main():
     config['batch_size'] = args.batch_size
     config['atn_epoch'] = args.atn_epoch
     config['atn_sample'] = args.atn_sample
-    config['atn_alpha'] = args.atn_alpha
-    config['atn_beta'] = args.atn_beta
-    config['atn_scratch'] = args.atn_scratch
+    config['atn_weight'] = args.atn_weight
+    config['atn_lr'] = args.atn_lr
     weight_path = './weights/vgg16_e086_90.62.pth'
 
     # classification model
@@ -41,27 +39,22 @@ def main():
     net.load_state_dict(state_dict)
     net.eval()
 
-    # test dataset
-    loader, _ = get_train_valid_loader(batch_size=32)
+    # train dataloader for testing
+    atn_train_loader, _ = get_train_valid_loader(batch_size=32, atn=int(config['atn_sample'] * 40000))
 
-    # train ATN
-    if config['atn_scratch']:
-        atn_weight = None
-        lr = 1e-3
-    else:
-        atn_weight = None
-        lr = 1e-4
-    atn = P_ATN(model=net, epsilon=8*4/255, weight=atn_weight, device=config['device'])
+    # train ATN (from scratch or not)
+    atn = P_ATN(model=net,
+                epsilon=8*4/255,
+                weight=config['atn_weight'],
+                device=config['device'])
 
     for epoch_idx in range(1, config['atn_epoch'] + 1):
         losses = []
         lossXs = []
         lossYs = []
         l2_lst = []
-        for batch_idx, (images, labels) in enumerate(loader):
-            if batch_idx == int(config['atn_sample'] * len(loader)):
-                break
-            loss, lossX, lossY, l2_dist = atn.train(images, labels, learning_rate=lr)
+        for batch_idx, (images, labels) in enumerate(atn_train_loader):
+            loss, lossX, lossY, l2_dist = atn.train(images, labels, learning_rate=config['atn_lr'])
             losses.append(loss)
             lossXs.append(lossX)
             lossYs.append(lossY)
@@ -77,7 +70,7 @@ def main():
     corr_adv = 0
     l2_lst = []
     linf_lst = []
-    for batch_idx, (images, labels) in enumerate(loader, start=1):
+    for batch_idx, (images, labels) in enumerate(atn_train_loader, start=1):
 
         images = images.to(config['device'])
         images_adv = atn.perturb(images)
@@ -108,7 +101,7 @@ def main():
 
     a = sum(l2_lst) / len(l2_lst)
     b = sum(linf_lst) / len(linf_lst)
-    print('[%5d/%5d] corr:%5d\tcorr_adv:%5d\tavg.l2:%.4f\tavg.linf:%.4f' % (batch_idx, len(loader), corr, corr_adv, a, b))
+    print('[%5d/%5d] corr:%5d\tcorr_adv:%5d\tavg.l2:%.4f\tavg.linf:%.4f' % (batch_idx, len(atn_train_loader), corr, corr_adv, a, b))
 
 
 if __name__ == '__main__':

@@ -111,7 +111,7 @@ def main():
     parser.add_argument('--batch_size', default=32, type=int)
     parser.add_argument('--lr', default=0.01, type=float)
     parser.add_argument('--lr_decay', default=20, type=int)
-    parser.add_argument('--pgd_train', default=None, type=str)
+    parser.add_argument('--pgd_type', default=None, type=str)
     parser.add_argument('--pgd_epsilon', default=8, type=int)
     parser.add_argument('--pgd_label', default=0, type=int)
     args = parser.parse_args()
@@ -122,7 +122,7 @@ def main():
     config['batch_size'] = args.batch_size
     config['learning_rate'] = args.lr
     config['lr_decay'] = args.lr_decay
-    config['pgd_train'] = args.pgd_train
+    config['pgd_type'] = args.pgd_type
     config['pgd_epsilon'] = args.pgd_epsilon
     config['pgd_label'] = args.pgd_label
 
@@ -150,10 +150,10 @@ def main():
             optimizer = optim.SGD(net.parameters(), lr=learning_rate, momentum=0.9, weight_decay=5e-4)
 
         # train & valid
-        if config['pgd_train'] == 'l2':
+        if config['pgd_type'] == 'l2':
             PGD = PGD_L2(model=net, epsilon=config['pgd_epsilon']*4/255)
             _ = train(train_loader, net, criterion, log_file, optimizer, epoch_idx, PGD=PGD, config=config)
-        elif config['pgd_train'] == 'linf':
+        elif config['pgd_type'] == 'linf':
             PGD = PGD_Linf(model=net, epsilon=config['pgd_epsilon']*4/255)
             _ = train(train_loader, net, criterion, log_file, optimizer, epoch_idx, PGD=PGD, config=config)
         else:
