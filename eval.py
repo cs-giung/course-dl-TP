@@ -9,9 +9,9 @@ import torch.nn as nn
 import torch.optim as optim
 import torch.backends.cudnn as cudnn
 
-from src import get_test_loader
-from src import VGG, FGSM, PGD_Linf, PGD_L2
+from src import VGG, get_test_loader
 from src import AverageMeter, ProgressMeter, accuracy, write_log
+from src_attacks import FGSM, PGD_Linf, PGD_L2
 
 
 torch.manual_seed(0)
