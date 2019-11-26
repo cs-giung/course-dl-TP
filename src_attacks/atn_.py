@@ -12,9 +12,6 @@ class P_ATN():
         self.epsilon = epsilon
         self.device = device
 
-        for p in self.model.parameters():
-            p.requires_grad = False
-
         self.net = _conv_fc().to(device)
         if weight is not None:
             state_dict = torch.load(weight, map_location=device)
@@ -25,7 +22,7 @@ class P_ATN():
 
         criterion_x = nn.MSELoss()
         criterion_y = nn.CrossEntropyLoss()
-        optimizer = optim.Adam(filter(lambda p: p.requires_grad, self.net.parameters()), lr=learning_rate)
+        optimizer = optim.Adam(self.net.parameters(), lr=learning_rate)
 
         images = images.to(self.device)
         labels = labels.to(self.device)
