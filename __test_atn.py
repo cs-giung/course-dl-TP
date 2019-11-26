@@ -42,8 +42,7 @@ def main():
     train_loader, _ = get_train_valid_loader(batch_size=config['atn_batch_size'])
 
     # train ATN (from scratch or not)
-    eps_list = [2, 4, 6, 8, 10, 12, 14, 16]
-    for eps in eps_list:
+    for eps in range(2, 17, 1):
         print('epsilon = %d' % (eps))
         atn = P_ATN(model=net,
                     epsilon=eps*4/255,
@@ -65,7 +64,7 @@ def main():
             avg_lossX = sum(lossXs) / len(lossXs)
             avg_lossY = sum(lossYs) / len(lossYs)
             avg_l2 = sum(l2_lst) / len(l2_lst)
-            print('[%3d / %3d] Avg.Loss: %.4f(%.4f, %.4f)\tAvg.L2-dist: %.4f' % (epoch_idx, config['atn_epoch'], avg_loss, avg_lossX, avg_lossY, avg_l2))
+            # print('[%3d / %3d] Avg.Loss: %.4f(%.4f, %.4f)\tAvg.L2-dist: %.4f' % (epoch_idx, config['atn_epoch'], avg_loss, avg_lossX, avg_lossY, avg_l2))
 
         # ATN examples
         corr = 0
