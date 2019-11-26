@@ -66,9 +66,9 @@ def main():
 
     # PGD instance
     if args.pgd_type == 'linf':
-        PGD = PGD_Linf(model=net)
+        PGD = PGD_Linf(model=net, epsilon=8*4/255)
     elif args.pgd_type == 'l2':
-        PGD = PGD_L2(model=net)
+        PGD = PGD_L2(model=net, epsilon=40*4/255)
 
     # PGD examples
     for images, labels in test_dataloader:
