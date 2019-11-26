@@ -10,9 +10,9 @@ import torch.nn.functional as F
 import torch.optim as optim
 import torch.backends.cudnn as cudnn
 
-from src import get_train_valid_loader
-from src import VGG, AAE_ATN
+from src import VGG, get_train_valid_loader
 from src import AverageMeter, ProgressMeter, accuracy, write_log
+from src_attacks import P_ATN
 
 
 torch.manual_seed(0)
@@ -114,12 +114,13 @@ def main():
     parser.add_argument('--lr', default=0.01, type=float)
     parser.add_argument('--lr_decay', default=20, type=int)
     parser.add_argument('--atn_epoch', default=10, type=int)
+    parser.add_argument('--atn_batch_size', default=32, type=int)
     parser.add_argument('--atn_sample', default=0.1, type=float)
-    parser.add_argument('--atn_alpha', default=0.1, type=float)
-    parser.add_argument('--atn_beta', default=0.7, type=float)
-    parser.add_argument('--atn_scratch', default=0, type=int)
+    parser.add_argument('--atn_weight', default=None, type=str)
+    parser.add_argument('--atn_lr', default=1e-4, type=float)
     parser.add_argument('--atn_threshold', default=8, type=int)
-    parser.add_argument('--atn_debug', default=0, type=int)
+    parser.add_argument('--atn_epsilon', default=8, type=int)
+    parser.add_argument('--atn_debug', default=1, type=int)
     args = parser.parse_args()
 
     config = dict()
@@ -129,11 +130,12 @@ def main():
     config['learning_rate'] = args.lr
     config['lr_decay'] = args.lr_decay
     config['atn_epoch'] = args.atn_epoch
+    config['atn_batch_size'] = args.atn_batch_size
     config['atn_sample'] = args.atn_sample
-    config['atn_alpha'] = args.atn_alpha
-    config['atn_beta'] = args.atn_beta
-    config['atn_scratch'] = args.atn_scratch
+    config['atn_weight'] = args.atn_weight
+    config['atn_lr'] = args.atn_lr
     config['atn_threshold'] = args.atn_threshold
+    config['atn_epsilon'] = args.atn_epsilon
     config['atn_debug'] = args.atn_debug
 
     # CIFAR-10 dataset (40000 + 10000)
@@ -160,16 +162,11 @@ def main():
             optimizer = optim.SGD(net.parameters(), lr=learning_rate, momentum=0.9, weight_decay=5e-4)
 
         # train ATN
-        atn_train_loader, _ = get_train_valid_loader(batch_size=config['batch_size'], atn=int(config['atn_sample']*40000))
-        if config['atn_scratch']:
-            atn = AAE_ATN(device=config['device'],
-                        target_classifier=net)
-            lr = 1e-3
-        else:
-            atn = AAE_ATN(device=config['device'],
-                        weight='./weights/base_atn_conv.pth',
-                        target_classifier=net)
-            lr = 1e-4
+        atn_train_loader, _ = get_train_valid_loader(batch_size=config['atn_batch_size'], atn=int(config['atn_sample']*40000))
+        atn = P_ATN(model=net,
+                    epsilon=config['atn_epsilon']*4/255,
+                    weight=config['atn_weight'],
+                    device=config['device'])
 
         for epoch_idx_atn in range(1, config['atn_epoch'] + 1):
             losses = []
@@ -177,7 +174,7 @@ def main():
             lossYs = []
             l2_lst = []
             for batch_idx, (images, labels) in enumerate(atn_train_loader):
-                loss,  lossX, lossY, l2_dist = atn.train(images, alpha=config['atn_alpha'], beta=config['atn_beta'], learning_rate=lr)
+                loss, lossX, lossY, l2_dist = atn.train(images, labels, learning_rate=config['atn_lr'])
                 losses.append(loss)
                 lossXs.append(lossX)
                 lossYs.append(lossY)
@@ -190,42 +187,20 @@ def main():
 
         # DEBUG
         if config['atn_debug']:
-            corr = 0
-            corr_adv = 0
-            l2_lst = []
-            linf_lst = []
-            for batch_idx, (images, labels) in enumerate(valid_loader, start=1):
-
-                images = images.to(config['device'])
-                images_adv = atn.perturb(images)
-
-                outputs = net(images)
-                outputs_adv = net(images_adv)
-
-                for image, image_adv, output, output_adv, label in zip(images, images_adv, outputs, outputs_adv, labels):
-
-                    soft_label = F.softmax(output, dim=0).cpu().detach().numpy()
-                    soft_label_adv = F.softmax(output_adv, dim=0).cpu().detach().numpy()
-
-                    label = label.item()
-                    pred = np.argmax(soft_label)
-                    pred_adv = np.argmax(soft_label_adv)
-
-                    if label == pred:
-                        corr += 1
-
-                    if label == pred_adv:
-                        corr_adv += 1
-
-                    l2_dist = torch.norm(image - image_adv, 2).item()
-                    linf_dist = torch.norm(image - image_adv, float('inf')).item()
-
-                    l2_lst.append(l2_dist)
-                    linf_lst.append(linf_dist)
-
-            a = sum(l2_lst) / len(l2_lst)
-            b = sum(linf_lst) / len(linf_lst)
-            print('[%5d/%5d] corr:%5d\tcorr_adv:%5d\tavg.l2:%.4f\tavg.linf:%.4f' % (batch_idx, len(valid_loader), corr, corr_adv, a, b))
+            with torch.no_grad():
+                corr = 0
+                corr_adv = 0
+                for batch_idx, (images, labels) in enumerate(valid_loader, start=1):
+                    images = images.to(config['device'])
+                    labels = labels.to(config['device'])
+                    images_adv = atn.perturb(images)
+                    outputs = net(images)
+                    outputs_adv = net(images_adv)
+                    _, preds = outputs.max(1)
+                    _, preds_adv = outputs_adv.max(1)
+                    corr += preds.eq(labels).sum().item()
+                    corr_adv += preds_adv.eq(labels).sum().item()
+                print('[%5d/%5d] corr:%5d\tcorr_adv:%5d' % (batch_idx, len(valid_loader), corr, corr_adv))
 
         # train & valid
         _ = train(train_loader, net, criterion, log_file, optimizer, epoch_idx, ATN=atn, config=config)
