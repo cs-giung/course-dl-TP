@@ -27,9 +27,6 @@ class P_ATN():
         images = images.to(self.device)
         labels = labels.to(self.device)
 
-        for p in self.model.parameters():
-            p.requires_grad = False
-
         perturbation = self.net(images)
         perturbation = perturbation.mul(self.epsilon)
         images_adv = images + perturbation
@@ -38,6 +35,7 @@ class P_ATN():
 
         # outputs = self.model(images)
         outputs_adv = self.model(images_adv)
+        self.model.zero_grad()
         lossY = criterion_y(outputs_adv, labels)
 
         loss = -lossY
