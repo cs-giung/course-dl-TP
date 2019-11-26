@@ -35,6 +35,7 @@ class P_ATN():
 
         # outputs = self.model(images)
         outputs_adv = self.model(images_adv)
+        self.model.zero_grad()
         lossY = criterion_y(outputs_adv, labels)
 
         loss = -lossY
