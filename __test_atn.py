@@ -75,6 +75,7 @@ def main():
         with torch.no_grad():
             for batch_idx, (images, labels) in enumerate(train_loader, start=1):
                 images = images.to(config['device'])
+                labels = labels.to(config['device'])
                 images_adv = atn.perturb(images)
                 outputs = net(images)
                 outputs_adv = net(images_adv)
