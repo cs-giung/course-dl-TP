@@ -71,39 +71,18 @@ def main():
         corr_adv = 0
         l2_lst = []
         linf_lst = []
-        for batch_idx, (images, labels) in enumerate(train_loader, start=1):
 
-            images = images.to(config['device'])
-            images_adv = atn.perturb(images)
-
-            outputs = net(images)
-            outputs_adv = net(images_adv)
-
-            for image, image_adv, output, output_adv, label in zip(images, images_adv, outputs, outputs_adv, labels):
-
-                soft_label = F.softmax(output, dim=0).cpu().detach().numpy()
-                soft_label_adv = F.softmax(output_adv, dim=0).cpu().detach().numpy()
-
-                label = label.item()
-                pred = np.argmax(soft_label)
-                pred_adv = np.argmax(soft_label_adv)
-
-                if label == pred:
-                    corr += 1
-
-                if label == pred_adv:
-                    corr_adv += 1
-
-                l2_dist = torch.norm(image - image_adv, 2).item()
-                linf_dist = torch.norm(image - image_adv, float('inf')).item()
-
-                l2_lst.append(l2_dist)
-                linf_lst.append(linf_dist)
-
-        a = sum(l2_lst) / len(l2_lst)
-        b = sum(linf_lst) / len(linf_lst)
-        print('[%5d/%5d] corr:%5d\tcorr_adv:%5d\tavg.l2:%.4f\tavg.linf:%.4f' % (batch_idx, len(train_loader), corr, corr_adv, a, b))
-        print()
+        with torch.no_grad():
+            for batch_idx, (images, labels) in enumerate(train_loader, start=1):
+                images = images.to(config['device'])
+                images_adv = atn.perturb(images)
+                outputs = net(images)
+                outputs_adv = net(images_adv)
+                _, preds = outputs.max(1)
+                _, preds_adv = outputs_adv.max(1)
+                corr += preds.eq(labels).sum().item()
+                corr_adv += preds_adv.eq(labels).sum().item()
+            print('[%5d/%5d] corr:%5d\tcorr_adv:%5d' % (batch_idx, len(train_loader), corr, corr_adv))
 
 
 if __name__ == '__main__':
