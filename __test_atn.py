@@ -35,6 +35,7 @@ def main():
     net = VGG('VGG16').to(config['device'])
     state_dict = torch.load(weight_path, map_location=config['device'])
     net.load_state_dict(state_dict)
+    net.eval()
 
     # train dataloader for testing
     atn_train_loader, _ = get_train_valid_loader(batch_size=config['atn_batch_size'], atn=int(config['atn_sample'] * 40000))
