@@ -27,7 +27,7 @@ class P_ATN():
         images = images.to(self.device)
         labels = labels.to(self.device)
 
-        for p in self.net.parameters():
+        for p in self.model.parameters():
             p.requires_grad = False
 
         perturbation = self.net(images)
