@@ -34,15 +34,12 @@ def train(train_loader, net, criterion, log_file,
     )
 
     end = time.time()
-    atn_cnt = 0
     for batch_idx, (images, labels) in enumerate(train_loader, start=1):
 
         images = images.to(device=config['device'])
         labels = labels.to(device=config['device'])
 
-        images, is_atn = ATN.perturb(images, threshold=config['atn_threshold'])
-        if is_atn:
-            atn_cnt += 1
+        images = ATN.perturb(images)
 
         outputs = net(images)
         loss = criterion(outputs, labels)
@@ -62,8 +59,6 @@ def train(train_loader, net, criterion, log_file,
         if batch_idx == 1 or batch_idx % 400 == 0:
             progress.display(batch_idx)
             write_log(log_file, progress.log_str(batch_idx))
-
-    print(atn_cnt)
 
     return top1.avg
 
@@ -118,7 +113,6 @@ def main():
     parser.add_argument('--atn_sample', default=0.1, type=float)
     parser.add_argument('--atn_weight', default=None, type=str)
     parser.add_argument('--atn_lr', default=1e-4, type=float)
-    parser.add_argument('--atn_threshold', default=8, type=int)
     parser.add_argument('--atn_epsilon', default=8, type=int)
     parser.add_argument('--atn_debug', default=1, type=int)
     args = parser.parse_args()
@@ -134,7 +128,6 @@ def main():
     config['atn_sample'] = args.atn_sample
     config['atn_weight'] = args.atn_weight
     config['atn_lr'] = args.atn_lr
-    config['atn_threshold'] = args.atn_threshold
     config['atn_epsilon'] = args.atn_epsilon
     config['atn_debug'] = args.atn_debug
 
