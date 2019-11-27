@@ -72,14 +72,20 @@ The PGD on left side works by calculating the gradients for a given classificati
 
 ## Result: Adversarial Training
 
+### FGSM-Training
+
+<p align="center">
+    <img width=50% src="./md/atn_plot/plot_std.png"><img width=50% src="./md/atn_plot/plot_fgsm.png">
+</p>
+
 ### PGD-Training
 
 <p align="center">
-    <img width=50% src="./md/eps8/plot0.png"><img width=50% src="./md/eps8/plot2.png">
+    <img width=50% src="./md/atn_plot/plot_std.png"><img width=50% src="./md/atn_plot/plot_pgd.png">
 </p>
 
 ### ATN-Training
 
 <p align="center">
-    <img width=50% src="./md/eps8/plot0.png"><img width=50% src="./md/atn_plot/train1.png">
+    <img width=50% src="./md/atn_plot/plot_std.png"><img width=50% src="./md/atn_plot/plot_atn.png">
 </p>
