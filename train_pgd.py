@@ -10,7 +10,7 @@ import torch.backends.cudnn as cudnn
 
 from src import VGG, get_train_valid_loader
 from src import AverageMeter, ProgressMeter, accuracy, write_log
-from src_attacks import PGD_Linf, PGD_L2
+from src_attacks import PGD_Linf, PGD_L2, FGSM
 
 
 torch.manual_seed(0)
@@ -156,6 +156,9 @@ def main():
         elif config['pgd_type'] == 'linf':
             PGD = PGD_Linf(model=net, epsilon=config['pgd_epsilon']*4/255)
             _ = train(train_loader, net, criterion, log_file, optimizer, epoch_idx, PGD=PGD, config=config)
+        elif config['pgd_type'] == 'fgms':
+            FGSM = FGSM(model=net, num_steps=config['pgd_epsilon'])
+            _ = train(train_loader, net, criterion, log_file, optimizer, epoch_idx, PGD=FGSM, config=config)
         else:
             _ = train(train_loader, net, criterion, log_file, optimizer, epoch_idx, PGD=None, config=config)
         valid_acc1 = valid(valid_loader, net, criterion, log_file, config=config)
