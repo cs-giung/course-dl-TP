@@ -70,22 +70,42 @@ python demo_atn.py --device cpu
 
 The PGD on left side works by calculating the gradients for a given classification network (we assume a white-box in this situation), and it can almost always produce valid results for typical images without pre-requirements. However, in the case of ATN on right side, note that it is only possible to produce valid results after a proper learning has been achieved (this is not satisfactory in this demonstration, and the cat image is just a specially easy case).
 
-## Result: Adversarial Training
+## Result #1: Adversarial Training (eps=8/255)
 
 ### FGSM-Training
 
 <p align="center">
-    <img width=50% src="./md/atn_plot/plot_std.png"><img width=50% src="./md/atn_plot/plot_fgsm.png">
+    <img width=50% src="./md/atn_plot_eps8/plot_std.png"><img width=50% src="./md/atn_plot_eps8/plot_fgsm.png">
 </p>
 
 ### PGD-Training
 
 <p align="center">
-    <img width=50% src="./md/atn_plot/plot_std.png"><img width=50% src="./md/atn_plot/plot_pgd.png">
+    <img width=50% src="./md/atn_plot_eps8/plot_std.png"><img width=50% src="./md/atn_plot_eps8/plot_pgd.png">
 </p>
 
 ### ATN-Training
 
 <p align="center">
-    <img width=50% src="./md/atn_plot/plot_std.png"><img width=50% src="./md/atn_plot/plot_atn.png">
+    <img width=50% src="./md/atn_plot_eps8/plot_std.png"><img width=50% src="./md/atn_plot_eps8/plot_atn.png">
+</p>
+
+## Result #2: Adversarial Training (eps=4/255)
+
+### FGSM-Training
+
+<p align="center">
+    <img width=50% src="./md/atn_plot_eps4/plot_std.png"><img width=50% src="./md/atn_plot_eps4/plot_fgsm.png">
+</p>
+
+### PGD-Training
+
+<p align="center">
+    <img width=50% src="./md/atn_plot_eps4/plot_std.png"><img width=50% src="./md/atn_plot_eps4/plot_pgd.png">
+</p>
+
+### ATN-Training
+
+<p align="center">
+    <img width=50% src="./md/atn_plot_eps4/plot_std.png"><img width=50% src="./md/atn_plot_eps4/plot_atn.png">
 </p>
