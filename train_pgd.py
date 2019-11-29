@@ -37,28 +37,15 @@ def train(train_loader, net, criterion, log_file,
         images = images.to(device=config['device'])
         labels = labels.to(device=config['device'])
 
-        if config['pgd_type'] in ['l2', 'linf']:
-
+        if PGD is not None:
             if config['pgd_label'] == 0:
-                images_adv = PGD.perturb(images, labels)
+                images = PGD.perturb(images, labels)
             else:
                 pred_labels = net(images).max(1, keepdim=True)[1].squeeze_()
-                images_adv = PGD.perturb(images, pred_labels)
-            outputs = net(images_adv)
-            loss = criterion(outputs, labels)
+                images = PGD.perturb(images, pred_labels)
 
-        elif config['pgd_type'] == 'fgsm':
-
-            if config['pgd_label'] == 0:
-                images_adv = PGD.perturb(images, labels)
-            else:
-                pred_labels = net(images).max(1, keepdim=True)[1].squeeze_()
-                images_adv = PGD.perturb(images, pred_labels)
-            outputs = net(images)
-            outputs_adv = net(images_adv)
-            loss = criterion(outputs, labels)
-            loss_adv = criterion(outputs_adv, labels)
-            loss = 0.5 * loss + 0.5 * loss_adv
+        outputs = net(images)
+        loss = criterion(outputs, labels)
 
         acc1, acc5 = accuracy(outputs, labels, topk=(1, 5))
         losses.update(loss.data, images.size(0))
