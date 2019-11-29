@@ -157,8 +157,8 @@ def main():
             PGD = PGD_Linf(model=net, epsilon=config['pgd_epsilon']*4/255)
             _ = train(train_loader, net, criterion, log_file, optimizer, epoch_idx, PGD=PGD, config=config)
         elif config['pgd_type'] == 'fgsm':
-            FGSM = FGSM(model=net, num_steps=config['pgd_epsilon'])
-            _ = train(train_loader, net, criterion, log_file, optimizer, epoch_idx, PGD=FGSM, config=config)
+            FG = FGSM(model=net, num_steps=config['pgd_epsilon'])
+            _ = train(train_loader, net, criterion, log_file, optimizer, epoch_idx, PGD=FG, config=config)
         else:
             _ = train(train_loader, net, criterion, log_file, optimizer, epoch_idx, PGD=None, config=config)
         valid_acc1 = valid(valid_loader, net, criterion, log_file, config=config)
