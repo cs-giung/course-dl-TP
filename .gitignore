@@ -5,7 +5,7 @@ data
 *.pth
 
 md/*.py
-md/eps2/*.py
-md/eps8/*.py
+md/old/eps2/*.py
+md/old/eps8/*.py
 md/atn_plot_eps4/*.py
 md/atn_plot_eps8/*.py
