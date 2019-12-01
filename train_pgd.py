@@ -107,12 +107,13 @@ def main():
 
     parser = argparse.ArgumentParser()
     parser.add_argument('--device', default='cuda', type=str)
-    parser.add_argument('--epochs', default=100, type=int)
+    parser.add_argument('--epochs', default=200, type=int)
     parser.add_argument('--batch_size', default=32, type=int)
     parser.add_argument('--lr', default=0.01, type=float)
     parser.add_argument('--lr_decay', default=20, type=int)
     parser.add_argument('--pgd_type', default=None, type=str)
     parser.add_argument('--pgd_epsilon', default=8, type=int)
+    parser.add_argument('--pgd_steps', default=10, type=int)
     parser.add_argument('--pgd_label', default=0, type=int)
     args = parser.parse_args()
 
@@ -124,6 +125,7 @@ def main():
     config['lr_decay'] = args.lr_decay
     config['pgd_type'] = args.pgd_type
     config['pgd_epsilon'] = args.pgd_epsilon
+    config['pgd_steps'] = args.pgd_steps
     config['pgd_label'] = args.pgd_label
 
     # CIFAR-10 dataset (40000 + 10000)
@@ -151,10 +153,10 @@ def main():
 
         # train & valid
         if config['pgd_type'] == 'l2':
-            PGD = PGD_L2(model=net, epsilon=config['pgd_epsilon']*4/255)
+            PGD = PGD_L2(model=net, epsilon=config['pgd_epsilon']*4/255, num_steps=config['pgd_steps'])
             _ = train(train_loader, net, criterion, log_file, optimizer, epoch_idx, PGD=PGD, config=config)
         elif config['pgd_type'] == 'linf':
-            PGD = PGD_Linf(model=net, epsilon=config['pgd_epsilon']*4/255)
+            PGD = PGD_Linf(model=net, epsilon=config['pgd_epsilon']*4/255, num_steps=config['pgd_steps'])
             _ = train(train_loader, net, criterion, log_file, optimizer, epoch_idx, PGD=PGD, config=config)
         elif config['pgd_type'] == 'fgsm':
             FG = FGSM(model=net, num_steps=config['pgd_epsilon'])
