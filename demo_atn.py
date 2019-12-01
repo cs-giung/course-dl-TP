@@ -59,7 +59,7 @@ def main():
 
     # train ATN
     atn = P_ATN(model=net, epsilon=8*4/255, weight=None, device=device)
-    for epoch_idx in range(1):
+    for epoch_idx in range(3):
         print(epoch_idx)
         for batch_idx, (images, labels) in enumerate(test_dataloader):
             if batch_idx == 0:

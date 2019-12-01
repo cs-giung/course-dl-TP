@@ -108,9 +108,9 @@ def main():
     parser.add_argument('--batch_size', default=32, type=int)
     parser.add_argument('--lr', default=0.01, type=float)
     parser.add_argument('--lr_decay', default=20, type=int)
+    parser.add_argument('--atn_sample', default=0.1, type=float)
     parser.add_argument('--atn_epoch', default=10, type=int)
     parser.add_argument('--atn_batch_size', default=32, type=int)
-    parser.add_argument('--atn_sample', default=0.1, type=float)
     parser.add_argument('--atn_weight', default=None, type=str)
     parser.add_argument('--atn_lr', default=1e-4, type=float)
     parser.add_argument('--atn_epsilon', default=8, type=int)
@@ -123,9 +123,9 @@ def main():
     config['batch_size'] = args.batch_size
     config['learning_rate'] = args.lr
     config['lr_decay'] = args.lr_decay
+    config['atn_sample'] = args.atn_sample
     config['atn_epoch'] = args.atn_epoch
     config['atn_batch_size'] = args.atn_batch_size
-    config['atn_sample'] = args.atn_sample
     config['atn_weight'] = args.atn_weight
     config['atn_lr'] = args.atn_lr
     config['atn_epsilon'] = args.atn_epsilon
