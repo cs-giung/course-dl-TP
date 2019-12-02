@@ -30,7 +30,7 @@ def test_accuracy(test_loader, net, config, attack=None):
         labels = labels.to(device=config['device'])
 
         if attack is not None:
-            images = attack.perturb(images, labels)
+            images = attack.perturb(images)
 
         output = net(images)
 
